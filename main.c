@@ -13,7 +13,7 @@ void main (int argc, char *argv[]) {
 
 		// Create log cmd
 		if (strcmp(buffer, "createlog") == 0) {
-			scanf("%s", buffer);
+			scanf("%s", buffer);	// Get the name of the Log
 			createLog(buffer);
 		} 
 

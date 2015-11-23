@@ -15,21 +15,32 @@ void createLog(char fileName[]) {
 	// Create new file with specified name
 	FILE *fp;
 	fp = fopen(fileName, "w+");
+		// FOR LATER USE: fputs(char *s, FILE *fp);
 
-	//fputs(char *s, FILE *fp);
+	// Form first log entry L0
+		// L0 contains:
+		// 	W0 - Log file initialization type
+		//	D0 - IDlog, M0
+			// IDlog - Unique string identifier for this log
+			// M0 (Message 0) - IDu, PKEpkT(K0), Ek0(X0, SIGNsku(X0))
+				// IDu - Unique String for entity u
+				// PKEpkT(K0) - public key enc. under x's public key K. Use RSA.
+				// Ek0(X0, SIGNsku(X0)) 
+					// Symettric encrption of X0
+					// Symmetric enc. of digital signature under u's private key, of X, use RSA.
 
+				// X0 = Cu, A0
+					// Cu - U's certificate from T
+					// A0 - random start point
 
-	/* Add log entry about the creation
-	 * To create the first log entry we must form a new:
-	 *	1. Ko - Random session key.
-	 *  (Skip time stamps)
-	 *	2. IDlog - Unique identifier for this logfile.
-	 *	3. Cu - U's certificate from T.
-	 *	4. Ao - Random starting point.
-	 *	5. Xo - Cu, Ao.
-	 * 	
-	 * We will send to T:
-	 *	1. Mo - Message with IDu, PKEpkT(Ko), Eko(Xo, SIGNsku(Xo))
-	 */
+	// W0 - Log file initialization type
+	char w0[5] = "admin";
+
+	// IDlog - Unique string identifier for this log
+	char IDlog[strlen(fileName)];
+	strcpy(IDlog, fileName);
+
+	// IDu - Unique String for entity u
+	char IDu = 'c';
 
 }
