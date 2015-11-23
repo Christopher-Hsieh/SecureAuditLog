@@ -4,7 +4,6 @@
 
 void main (int argc, char *argv[]) {
  	
-	//int maxBufSize = 256;
 	char buffer[256];
 
 
@@ -13,8 +12,9 @@ void main (int argc, char *argv[]) {
 		scanf("%s", buffer);
 
 		// Create log cmd
-		if (strncmp(buffer, "createlog", 9) == 0) {
-			//TODO
+		if (strcmp(buffer, "createlog") == 0) {
+			scanf("%s", buffer);
+			createLog(buffer);
 		} 
 
 		// Add log message cmd

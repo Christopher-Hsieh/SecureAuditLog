@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 // untrustedLogger.c
 // This file basically acts as "U", otherwise known as Untrusted Machine/Logger
 
@@ -7,8 +11,13 @@
  * the protocol, this operation should add a log entry about the creation of the log
  * file
  */
-void createLog(char* buffer) {
+void createLog(char fileName[]) {
 	// Create new file with specified name
+	FILE *fp;
+	fp = fopen(fileName, "w+");
+
+	//fputs(char *s, FILE *fp);
+
 
 	/* Add log entry about the creation
 	 * To create the first log entry we must form a new:
