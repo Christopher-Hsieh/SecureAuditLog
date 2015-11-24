@@ -24,9 +24,9 @@ void createLog(char fileName[]) {
 			// IDlog - Unique string identifier for this log
 			// M0 (Message 0) - IDu, PKEpkT(K0), Ek0(X0, SIGNsku(X0))
 				// IDu - Unique String for entity u
-				// PKEpkT(K0) - public key enc. under x's public key K. Use RSA.
+				// PKEpkT(K0) - public key enc. under t's public key K. Use RSA.
 				// Ek0(X0, SIGNsku(X0)) 
-					// Symettric encrption of X0
+					// Symmetric encrption of X0, use key K0
 					// Symmetric enc. of digital signature under u's private key, of X, use RSA.
 
 				// X0 = Cu, A0
