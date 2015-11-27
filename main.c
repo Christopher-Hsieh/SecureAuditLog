@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+
 void main (int argc, char *argv[]) {
  	
 	char buffer[256];
