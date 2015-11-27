@@ -95,13 +95,20 @@ void createLog(char fileName[]) {
 	// Where we send the key to 
 	char *encrypted = malloc((RSA_size(rsa) + 1) * sizeof(*encrypted));
 
-	int result = RSA_public_encrypt(strlen(privbuffer), privbuffer, encrypted, rsa, RSA_PKCS1_PADDING);
+	int result = RSA_public_encrypt(strlen(privbuffer), privbuffer, encrypted, rsa, RSA_NO_PADDING);
 
 	encrypted[result] = '\0';
 
 	printf("RESULT:%i\n", result);
-	printf("%s\n",tpub_key);
-	printf("%s\n", privbuffer);
-	printf("HERE IS ENCRYPTED: %s\n", encrypted);
+	if (result == -1) {
+		char * err = malloc(130);;
+   		ERR_load_crypto_strings();
+    	ERR_error_string(ERR_get_error(), err);
+   	 	printf("ERROR: %s\n", err);
+    	free(err);
+	}
+	// printf("%s\n",tpub_key);
+	// printf("%s\n", privbuffer);
+	// printf("HERE IS ENCRYPTED: %s\n", encrypted);
 
 }
