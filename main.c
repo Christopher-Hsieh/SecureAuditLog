@@ -8,7 +8,6 @@
 #include "prototypes.h"
 
 void main (int argc, char *argv[]) {
- 	createSessionKey();
 	char buffer[256];
 
 

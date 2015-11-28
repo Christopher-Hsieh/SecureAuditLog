@@ -12,22 +12,23 @@
 
 char *sessionKey = NULL;
 
-char *createSessionKey(int length) {
+char *createKey(int length) {
     static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-#'?!";        
 
-     sessionKey = malloc(sizeof(char) * (length +1));
+    char *currentKey = NULL;
+     currentKey = malloc(sizeof(char) * (length +1));
 
-    if (sessionKey) {    
+    if (currentKey) {    
       	int n;        
         for (n = 0; n < length; n++) {            
             int key = rand() % (int)(sizeof(charset) -1);
-            sessionKey[n] = charset[key];
+            currentKey[n] = charset[key];
         }
 
-        sessionKey[length] = '\0';
+        currentKey[length] = '\0';
     }
 
-    return sessionKey;
+    return currentKey;
 }
 
 RSA * createRSA(unsigned char* key) {
@@ -118,16 +119,14 @@ void createLog(char fileName[]) {
 	char *tpub_key = fileToBuffer(tpub);
 
 	RSA *rsa = createRSA(tpub_key);
-	//printf("%i\n", RSA_size(rsa));
 
 	// Where we send the key to 
 	char *encrypted = malloc((RSA_size(rsa) + 1) * sizeof(*encrypted));
 
-	// create random session key that's the same length as the rsa key
-	char *k0 = createSessionKey(RSA_size(rsa));
+	// ------------- generate random session key K0 -------------
+	sessionKey = createKey(RSA_size(rsa));
 
-	int result = RSA_public_encrypt(strlen(k0), k0, encrypted, rsa, RSA_NO_PADDING);
-
+	int result = RSA_public_encrypt(strlen(sessionKey), sessionKey, encrypted, rsa, RSA_NO_PADDING);
 	encrypted[result] = '\0';
 
 	// printf("RESULT:%i\n", result);
@@ -153,4 +152,24 @@ void createLog(char fileName[]) {
 
 	// ------------- get certificate from T -------------
 	char *certificate = getCertificate(upub_key); //this call currently just returns static string
+
+	// ------------- generate authentication key A0 -------------
+	char *authKey = createKey(RSA_size(rsa));
+
+	// ------------- ignore protocol step identifier p (according to TA) -------------
+
+	// ------------- create X0 from existing variables -------------
+	struct X {
+	   	struct timeval d;
+	   	char  Cu[strlen(certificate) + 1];
+	   	char  A0[strlen(authKey) + 1];
+	} X0;
+
+	X0.d = timeStamp;
+	strcpy(X0.Cu, certificate);
+	strcpy(X0.A0, authKey); 
+
+	// printf ("d: %d.%06d\n", (int)X0.d.tv_sec, (int)X0.d.tv_usec);
+	// printf("Cu: %s\n", X0.Cu);
+	// printf("A0: %s\n", X0.A0);
 }
