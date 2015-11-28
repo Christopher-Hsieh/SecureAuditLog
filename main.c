@@ -7,29 +7,6 @@
 
 #include "prototypes.h"
 
-char *sessionKey = NULL;
-
- char *createSessionKey() {
- 	static int length = 16;
-    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-#'?!";        
-
-     sessionKey = malloc(sizeof(char) * (length +1));
-
-    if (sessionKey) {    
-      	int n;        
-        for (n = 0; n < length; n++) {            
-            int key = rand() % (int)(sizeof(charset) -1);
-            sessionKey[n] = charset[key];
-        }
-
-        sessionKey[length] = '\0';
-    }
-}
-
-char *getSessionKey(){
-	return sessionKey;
-}
-
 void main (int argc, char *argv[]) {
  	createSessionKey();
 	char buffer[256];

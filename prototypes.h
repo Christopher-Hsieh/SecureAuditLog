@@ -1,2 +1,6 @@
+#ifndef PROTOTYPES
+#define PROTOTYPES
+
 void createLog(char fileName[]);
-char *getSessionKey();
+
+#endif

@@ -9,6 +9,26 @@
 
 #include "prototypes.h"
 
+char *sessionKey = NULL;
+
+char *createSessionKey(int length) {
+    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-#'?!";        
+
+     sessionKey = malloc(sizeof(char) * (length +1));
+
+    if (sessionKey) {    
+      	int n;        
+        for (n = 0; n < length; n++) {            
+            int key = rand() % (int)(sizeof(charset) -1);
+            sessionKey[n] = charset[key];
+        }
+
+        sessionKey[length] = '\0';
+    }
+
+    return sessionKey;
+}
+
 RSA * createRSA(unsigned char* key) {
 	RSA *rsa = NULL;
 	BIO *keybio;
@@ -88,8 +108,6 @@ void createLog(char fileName[]) {
 	// upriv = fopen("U_Priv.pem", "r");
 	// char *privbuffer = fileToBuffer(upriv);
 
-	char *k0 = getSessionKey();
-
 	FILE *tpub;
 	tpub = fopen("T_Pub.pub", "r");
 	char *tpub_key = fileToBuffer(tpub);
@@ -100,11 +118,8 @@ void createLog(char fileName[]) {
 	// Where we send the key to 
 	char *encrypted = malloc((RSA_size(rsa) + 1) * sizeof(*encrypted));
 
-	printf("%zd", strlen(k0));
-	printf("\n");
-	printf("%d", RSA_size(rsa));
-	printf("\n");
-	// fflush(stdout); 
+	// create random session key that's the same length as the rsa key
+	char *k0 = createSessionKey(RSA_size(rsa));
 
 	int result = RSA_public_encrypt(strlen(k0), k0, encrypted, rsa, RSA_NO_PADDING);
 
