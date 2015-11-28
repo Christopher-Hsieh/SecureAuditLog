@@ -5,11 +5,9 @@
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/ssl.h>
-// #include <openssl/evp.h>
 #include <openssl/bio.h>
-// #include <openssl/err.h>
-// untrustedLogger.c
-// This file basically acts as "U", otherwise known as Untrusted Machine/Logger
+
+#include "prototypes.h"
 
 RSA * createRSA(unsigned char* key) {
 	RSA *rsa = NULL;
@@ -54,17 +52,22 @@ void createLog(char fileName[]) {
 			// IDlog - Unique string identifier for this log
 			// M0 (Message 0) - IDu, PKEpkT(K0), Ek0(X0, SIGNsku(X0))
 				// IDu - Unique String for entity u
-				// PKEpkT(K0) - public key enc. under t's public key K. Use RSA.
+				// PKEpkT(K0) - public key enc. where K is a random session key. 
+					// RSA
 				// Ek0(X0, SIGNsku(X0)) 
+					// DES
 					// Symmetric encrption of X0, use key K0
 					// Symmetric enc. of digital signature under u's private key, of X, use RSA.
 
 				// X0 = Cu, A0
 					// Cu - U's certificate from T
 					// A0 - random start point
+				// hash(X)
+					// SHA-1
+					// Hash the authentication key Aj immediately after a log entry is written
 
 	// W0 - Log file initialization type
-	char w0[5] = "admin";
+	char w0[] = "LogfileInitializationType";
 
 	// IDlog - Unique string identifier for this log
 	char IDlog[strlen(fileName)];
@@ -81,9 +84,11 @@ void createLog(char fileName[]) {
 		// int padding
 
 	// Get U's private key
-	FILE *upriv;
-	upriv = fopen("U_Priv.pem", "r");
-	char *privbuffer = fileToBuffer(upriv);
+	// FILE *upriv;
+	// upriv = fopen("U_Priv.pem", "r");
+	// char *privbuffer = fileToBuffer(upriv);
+
+	char *k0 = getSessionKey();
 
 	FILE *tpub;
 	tpub = fopen("T_Pub.pub", "r");
@@ -95,7 +100,13 @@ void createLog(char fileName[]) {
 	// Where we send the key to 
 	char *encrypted = malloc((RSA_size(rsa) + 1) * sizeof(*encrypted));
 
-	int result = RSA_public_encrypt(strlen(privbuffer), privbuffer, encrypted, rsa, RSA_NO_PADDING);
+	printf("%zd", strlen(k0));
+	printf("\n");
+	printf("%d", RSA_size(rsa));
+	printf("\n");
+	// fflush(stdout); 
+
+	int result = RSA_public_encrypt(strlen(k0), k0, encrypted, rsa, RSA_NO_PADDING);
 
 	encrypted[result] = '\0';
 

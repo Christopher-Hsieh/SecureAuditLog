@@ -2,12 +2,12 @@
 all: run_me test
 
 # Make the main file
-run_me: main.o untrustedLogger.o
-	gcc main.o untrustedLogger.o -o run_me -lssl -lcrypto
+run_me: main.o untrustedLogger.o trusted.o verifier.o
+	gcc main.o untrustedLogger.o trusted.o verifier.o -o run_me -lssl -lcrypto
 
 # Make the test file
-test: test.o untrustedLogger.o 
-	gcc test.o untrustedLogger.o -o test -lssl -lcrypto
+test: test.o untrustedLogger.o trusted.o verifier.o
+	gcc test.o untrustedLogger.o trusted.o verifier.o -o test -lssl -lcrypto
 
 
 main.o: main.c
@@ -15,6 +15,12 @@ main.o: main.c
 
 untrustedLogger.o: untrustedLogger.c
 	gcc -c untrustedLogger.c -lssl -lcrypto
+
+trusted.o: trusted.c
+	gcc -c trusted.c -lssl -lcrypto
+
+verifier.o: verifier.c
+	gcc -c verifier.c -lssl -lcrypto
 
 # Clean everything
 clean: 
