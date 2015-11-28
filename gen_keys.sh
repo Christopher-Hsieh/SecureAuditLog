@@ -10,3 +10,5 @@ openssl rsa -in U_Priv.pem -pubout > U_Pub.pub
 openssl genrsa -out T_Priv.pem 128
 # Extract public key
 openssl rsa -in T_Priv.pem -pubout > T_Pub.pub
+
+# Certificate from Trusted for Untrusted public key (???)

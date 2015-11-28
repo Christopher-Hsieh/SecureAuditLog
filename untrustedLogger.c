@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
@@ -108,6 +109,10 @@ void createLog(char fileName[]) {
 	// upriv = fopen("U_Priv.pem", "r");
 	// char *privbuffer = fileToBuffer(upriv);
 
+	FILE *upub;
+	upub = fopen("U_Pub.pub", "r");
+	char *upub_key = fileToBuffer(upub);
+
 	FILE *tpub;
 	tpub = fopen("T_Pub.pub", "r");
 	char *tpub_key = fileToBuffer(tpub);
@@ -125,7 +130,7 @@ void createLog(char fileName[]) {
 
 	encrypted[result] = '\0';
 
-	printf("RESULT:%i\n", result);
+	// printf("RESULT:%i\n", result);
 	if (result == -1) {
 		char * err = malloc(130);;
    		ERR_load_crypto_strings();
@@ -137,4 +142,15 @@ void createLog(char fileName[]) {
 	// printf("%s\n", privbuffer);
 	// printf("HERE IS ENCRYPTED: %s\n", encrypted);
 
+	// ------------- get time stamp d and d+ -------------
+	struct timeval timeStamp;
+	struct timeval timeStamp_expire;
+
+	gettimeofday(&timeStamp,NULL);
+	gettimeofday(&timeStamp_expire,NULL);
+	// add 10 minutes to expire time
+	timeStamp_expire.tv_sec += 600;
+
+	// ------------- get certificate from T -------------
+	char *certificate = getCertificate(upub_key); //this call currently just returns static string
 }

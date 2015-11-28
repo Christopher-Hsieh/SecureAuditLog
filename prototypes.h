@@ -1,6 +1,7 @@
 #ifndef PROTOTYPES
 #define PROTOTYPES
 
-void createLog(char fileName[]);
+void createLog(char[]);
+char *getCertificate(char*);
 
 #endif
