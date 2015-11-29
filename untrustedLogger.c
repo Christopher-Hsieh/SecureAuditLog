@@ -19,8 +19,6 @@ struct X {
 	   	char*  A0;
 };
 
-
-
 RSA * createRSA(unsigned char* key) {
 	RSA *rsa = NULL;
 	BIO *keybio;
@@ -56,7 +54,7 @@ U forms the rst log entry, L0:
 	D0 = d; d+; IDlog; M0
 */
 void createFirstLogEntry(char* w0, struct X x0) {
-	int LogNumber = getLogNumber();
+	
 }
 
 /*
