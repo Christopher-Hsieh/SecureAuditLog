@@ -13,6 +13,12 @@
 
 char *sessionKey = NULL;
 
+struct X {
+	   	struct timeval d;
+	   	char*  Cu;
+	   	char*  A0;
+};
+
 char *createKey(int length) {
     static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-#'?!";        
 
@@ -59,6 +65,15 @@ char * fileToBuffer(FILE *fp) {
 // TODO, Add SIGNsku(X0) to this function
 char * toCharPointHelper(char Cu[], char A0[]) {
 	return strcat(Cu, A0);
+}
+
+/*
+U forms the rst log entry, L0:
+	W0 = LogleInitializationType
+	D0 = d; d+; IDlog; M0
+*/
+void createFirstLogEntry(char* w0, struct X x0) {
+	
 }
 
 /*
@@ -158,11 +173,12 @@ void createLog(char fileName[]) {
 	// ------------- ignore protocol step identifier p (according to TA) -------------
 
 	// ------------- create X0 from existing variables -------------
-	struct X {
-	   	struct timeval d;
-	   	char  Cu[strlen(certificate) + 1];
-	   	char  A0[strlen(authKey) + 1];
-	} X0;
+	// struct X {
+	//    	struct timeval d;
+	//    	char  Cu[strlen(certificate) + 1];
+	//    	char  A0[strlen(authKey) + 1];
+	// } X0;
+	struct X X0;
 
 	X0.d = timeStamp;
 	strcpy(X0.Cu, certificate);
