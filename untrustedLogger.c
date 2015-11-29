@@ -12,21 +12,13 @@
 #include "prototypes.h"
 
 char *sessionKey = NULL;
+int SIZE_OF_RSA = 16;
 
 struct X {
 	   	struct timeval d;
 	   	char*  Cu;
 	   	char*  A0;
 };
-
-RSA * createRSA(unsigned char* key) {
-	RSA *rsa = NULL;
-	BIO *keybio;
-	keybio = BIO_new_mem_buf(key, -1);
-
-	rsa = PEM_read_bio_RSA_PUBKEY(keybio, &rsa, NULL, NULL);
-	return rsa;
-}
 
 char * fileToBuffer(FILE *fp) {
 	fseek(fp, 0L, SEEK_END);
@@ -113,28 +105,11 @@ void createLog(char fileName[]) {
 	tpub = fopen("T_Pub.pub", "r");
 	char *tpub_key = fileToBuffer(tpub);
 
-	RSA *rsa = createRSA(tpub_key);
-
-	// Where we send the key to 
-	char *encrypted = malloc((RSA_size(rsa) + 1) * sizeof(*encrypted));
-
 	// ------------- generate random session key K0 -------------
-	sessionKey = createKey(RSA_size(rsa));
+	sessionKey = createKey(SIZE_OF_RSA);
 
-	int result = RSA_public_encrypt(strlen(sessionKey), sessionKey, encrypted, rsa, RSA_NO_PADDING);
-	encrypted[result] = '\0';
-
-	// printf("RESULT:%i\n", result);
-	if (result == -1) {
-		char * err = malloc(130);;
-   		ERR_load_crypto_strings();
-    	ERR_error_string(ERR_get_error(), err);
-   	 	printf("ERROR: %s\n", err);
-    	free(err);
-	}
-	// printf("%s\n",tpub_key);
-	// printf("%s\n", privbuffer);
-	// printf("HERE IS ENCRYPTED: %s\n", encrypted);
+	// ------------- Encrypt using PKE --------------
+	char *encrypted = publicKeyEncrypt(tpub_key, sessionKey);
 
 	// ------------- get time stamp d and d+ -------------
 	struct timeval timeStamp;
@@ -149,7 +124,7 @@ void createLog(char fileName[]) {
 	char *certificate = getCertificate(upub_key); //this call currently just returns static string
 
 	// ------------- generate authentication key A0 -------------
-	char *authKey = createKey(RSA_size(rsa));
+	char *authKey = createKey(SIZE_OF_RSA);
 
 	// ------------- ignore protocol step identifier p (according to TA) -------------
 

@@ -15,5 +15,5 @@ char* getCertificate(char* publicKey){
 }
 
 char* verifyLog(char* log){
-	
+
 }

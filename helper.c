@@ -3,6 +3,10 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/ssl.h>
+#include <openssl/bio.h>
 #include <openssl/blowfish.h>
 
 /*
@@ -28,6 +32,36 @@ char *createKey(int length) {
     return currentKey;
 }
 
+RSA * createRSA(unsigned char* key) {
+    RSA *rsa = NULL;
+    BIO *keybio;
+    keybio = BIO_new_mem_buf(key, -1);
+
+    rsa = PEM_read_bio_RSA_PUBKEY(keybio, &rsa, NULL, NULL);
+    return rsa;
+}
+
+char* publicKeyEncrypt(char* pub_key, char* sessionKey){
+    // Where we send the key to 
+    RSA *rsa = createRSA(pub_key);
+    char *encrypted = malloc((RSA_size(rsa) + 1) * sizeof(*encrypted));
+    int result = RSA_public_encrypt(strlen(sessionKey), sessionKey, encrypted, rsa, RSA_NO_PADDING);
+    encrypted[result] = '\0';
+
+    // printf("RESULT:%i\n", result);
+    if (result == -1) {
+        char * err = malloc(130);;
+        ERR_load_crypto_strings();
+        ERR_error_string(ERR_get_error(), err);
+        printf("ERROR: %s\n", err);
+        free(err);
+    }
+    // printf("%s\n",pub_key);
+    // printf("%s\n", privbuffer);
+    // printf("HERE IS ENCRYPTED: %s\n", encrypted);
+
+    return encrypted;
+}
 
 char* encrypt(char *strToEncypt, char* key) {
     int bfSize = strlen(strToEncypt);
