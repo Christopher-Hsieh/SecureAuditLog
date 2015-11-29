@@ -7,5 +7,6 @@ char *createKey(int);
 char *encrypt(char*, char*);
 char* publicKeyEncrypt(char*, char*);
 RSA* createRSA(unsigned char*);
+char *decrypt(char*, char*);
 
 #endif

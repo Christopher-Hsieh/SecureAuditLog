@@ -77,3 +77,18 @@ char* encrypt(char *strToEncypt, char* key) {
 
     return encryptedStr;
 }
+
+char* decrypt(char* in, char* key) {
+    int bfSize = strlen(in);
+
+    BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
+    // Turn key into BF key
+    BF_set_key(bf_key, bfSize, key);
+
+    unsigned char *out = malloc((bfSize + 1) * sizeof(*out));
+    
+    char * ivec = malloc((bfSize + 1) * sizeof(*ivec));
+
+    BF_cbc_encrypt(in, out, bfSize, bf_key, ivec, BF_DECRYPT);
+    return out;
+}
