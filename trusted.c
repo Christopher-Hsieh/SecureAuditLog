@@ -14,6 +14,11 @@ char* getCertificate(char* publicKey){
 	return "random_key";
 }
 
-char* verifyLog(char* log){
-
+char* verifyLog(char* IDu, char* PKEsessionKey, char* encryptedLog){
+	//Decrypt PKE session key
+	//Decrpyt encryptedLog using session key
+	//Verify X0 and SIGN(X0) are correct
+	//Create X1 = IDu, hash(X0)
+	//Generate random session key K1
+	//Create M1 = IDt, PKE(K1), E(X1, SIGN(X1))
 }
