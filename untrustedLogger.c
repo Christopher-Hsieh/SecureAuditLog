@@ -36,13 +36,50 @@ char * toCharPointHelper(char Cu[], char A0[]) {
 }
 
 /*
-U forms the rst log entry, L0:
-	W0 = LogleInitializationType
+U forms the first log entry, L0:
+	W0 = LogFileInitializationType
 	D0 = d; d+; IDlog; M0
+		M0 = IDu, PKEpkt(K0), Ek0(X0, SIGNsku(X0))
 */
-// void createFirstLogEntry(char* w0, struct X x0) {
-	
-// }
+void createFirstLogEntry(char* filename, char* w0, struct timeval d, 
+						 int IDu, char* PKEpkt, char* Ek0) {
+	FILE *fp;
+	fp = fopen(filename, "w+");
+
+	// Make IDlog - Unique identifier for this log
+	fputs("LOGIDENTIFIER:1\n\n", fp);
+	//fputs((const char*)getLogNumber(), fp);
+
+	fputs("Entry:0\n", fp);
+
+	fputs("LogFileInitializationType:", fp);
+	fputs(w0, fp);
+	fputs("\n", fp);
+
+	// d or timestamp
+	// fputs("Time:", fp);
+	// fputs(d, fp);
+	// fputs("\n", fp);
+
+	// //IDu
+	// fputs("IDu:", fp);
+	// fputs(IDu, fp);
+	// fputs("\n", fp);
+
+	//PKEpkt
+	fputs("PKEpkt:", fp);
+	fputs(PKEpkt, fp);
+	fputs("\n", fp);
+
+	//Ek0
+	fputs("Ek0:", fp);
+	fputs(Ek0, fp);
+	fputs("\n", fp);
+
+
+	fclose(fp);
+
+}
 
 /*
  * The logger creates and opens a new log file with the specified name. The logger
@@ -52,9 +89,6 @@ U forms the rst log entry, L0:
  */
 void createLog(char fileName[]) {
 	// Create new file with specified name
-	FILE *fp;
-	fp = fopen(fileName, "w+");
-		// FOR LATER USE: fputs(char *s, FILE *fp);
 
 	// Form first log entry L0
 		// L0 contains:
@@ -77,8 +111,8 @@ void createLog(char fileName[]) {
 	char IDlog[strlen(fileName)];
 	strcpy(IDlog, fileName);
 
-	// IDu - Unique String for entity u
-	char IDu = 'c';
+	// IDu - Unique ID for entity u
+	int IDu = 101;
 
 	// PKEpkT(K0) - public key enc. under t's public key K. Use RSA.
 		// data length
@@ -105,7 +139,7 @@ void createLog(char fileName[]) {
 
 
 	// ------------- Encrypt using PKE --------------
-	char *encrypted = publicKeyEncrypt(tpub_key, sessionKey);
+	char *pke = publicKeyEncrypt(tpub_key, sessionKey);
 
 	// ------------- get time stamp d and d+ -------------
 	struct timeval timeStamp;
@@ -152,11 +186,11 @@ void createLog(char fileName[]) {
 			// A0 - random start point
 
 	// ------------- Turn K0 into BF key for symmetric enc -------------
-	unsigned char *out = malloc((strlen(toCharPointHelper(X0.Cu, X0.A0)) + 1) * sizeof(*out));
-	out = encrypt(toCharPointHelper(X0.Cu, X0.A0), sessionKey);
+	unsigned char *Ek0 = malloc((strlen(toCharPointHelper(X0.Cu, X0.A0)) + 1) * sizeof(*Ek0));
+	Ek0 = encrypt(toCharPointHelper(X0.Cu, X0.A0), sessionKey);
 
 	// ------------- EK0 done & created -------------
 
-
+	createFirstLogEntry(fileName, w0, X0.d, IDu, pke, Ek0);
 }
 
