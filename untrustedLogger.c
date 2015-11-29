@@ -7,6 +7,7 @@
 #include <openssl/pem.h>
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
+#include <openssl/blowfish.h>
 
 #include "prototypes.h"
 
@@ -55,6 +56,11 @@ char * fileToBuffer(FILE *fp) {
 	return buffer;
 }
 
+// TODO, Add SIGNsku(X0) to this function
+char * toCharPointHelper(char Cu[], char A0[]) {
+	return strcat(Cu, A0);
+}
+
 /*
  * The logger creates and opens a new log file with the specified name. The logger
  * should create a file with the given name in the current directory. According to
@@ -76,17 +82,10 @@ void createLog(char fileName[]) {
 				// IDu - Unique String for entity u
 				// PKEpkT(K0) - public key enc. where K is a random session key. 
 					// RSA
-				// Ek0(X0, SIGNsku(X0)) 
-					// DES
-					// Symmetric encrption of X0, use key K0
-					// Symmetric enc. of digital signature under u's private key, of X, use RSA.
-
-				// X0 = Cu, A0
-					// Cu - U's certificate from T
-					// A0 - random start point
-				// hash(X)
-					// SHA-1
-					// Hash the authentication key Aj immediately after a log entry is written
+			// hash(X)
+			// SHA-1
+			// Hash the authentication key Aj immediately after a log entry is written
+				
 
 	// W0 - Log file initialization type
 	char w0[] = "LogfileInitializationType";
@@ -172,4 +171,39 @@ void createLog(char fileName[]) {
 	// printf ("d: %d.%06d\n", (int)X0.d.tv_sec, (int)X0.d.tv_usec);
 	// printf("Cu: %s\n", X0.Cu);
 	// printf("A0: %s\n", X0.A0);
+
+
+	//Ek0(X0, SIGNsku(X0)) 
+		// Blowfish
+		// Symmetric encrption of X0, use key K0
+		// Symmetric enc. of digital signature under u's private key, of X, use RSA.
+
+		// X0 = Cu, A0
+			// Cu - U's certificate from T
+			// A0 - random start point
+
+	// ------------- Turn K0 into BF key for symmetric enc -------------
+	int bfSize = strlen(toCharPointHelper(X0.Cu, X0.A0));
+
+	BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
+
+	BF_set_key(bf_key, bfSize, sessionKey);
+
+	// printf("%s\n", sessionKey);
+	// printf("%i\n", (int)strlen(sessionKey));
+
+	char *Ek0 = malloc((bfSize + 1) * sizeof(*Ek0));
+
+	//printf("%s\n", toCharPointHelper(X0.Cu, X0.A0));
+
+// void BF_cbc_encrypt(const unsigned char *in, unsigned char *out,
+  //     long length, BF_KEY *schedule, unsigned char *ivec, int enc);
+
+	BF_cbc_encrypt(toCharPointHelper(X0.Cu, X0.A0), Ek0, bfSize, bf_key, NULL, BF_ENCRYPT);
+
+	unsigned char *out = malloc((bfSize + 1) * sizeof(*Ek0));
+	BF_ecb_encrypt(Ek0, out, bf_key, BF_DECRYPT);
+	printf("%s\n", out);
+
 }
+
