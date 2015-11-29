@@ -189,21 +189,27 @@ void createLog(char fileName[]) {
 
 	BF_set_key(bf_key, bfSize, sessionKey);
 
-	// printf("%s\n", sessionKey);
-	// printf("%i\n", (int)strlen(sessionKey));
+	//printf("Session Key: %s\n", sessionKey);
 
 	char *Ek0 = malloc((bfSize + 1) * sizeof(*Ek0));
 
-	//printf("%s\n", toCharPointHelper(X0.Cu, X0.A0));
+	//printf("X0:  %s | Len: %i\n", toCharPointHelper(X0.Cu, X0.A0), bfSize);
 
-// void BF_cbc_encrypt(const unsigned char *in, unsigned char *out,
-  //     long length, BF_KEY *schedule, unsigned char *ivec, int enc);
+	char * ivec = malloc((bfSize + 1) * sizeof(*Ek0));
+	BF_cbc_encrypt(toCharPointHelper(X0.Cu, X0.A0), Ek0, bfSize, bf_key, ivec, BF_ENCRYPT);
 
-	BF_cbc_encrypt(toCharPointHelper(X0.Cu, X0.A0), Ek0, bfSize, bf_key, NULL, BF_ENCRYPT);
+	//printf("Ek0: %s | Len: %i\n", Ek0, (int)strlen(Ek0));
 
 	unsigned char *out = malloc((bfSize + 1) * sizeof(*Ek0));
-	BF_ecb_encrypt(Ek0, out, bf_key, BF_DECRYPT);
-	printf("%s\n", out);
+	//BF_ecb_encrypt(Ek0, out, bf_key, BF_DECRYPT);
+	char * ivec2 = malloc((bfSize + 1) * sizeof(*Ek0));
+
+	BF_cbc_encrypt(Ek0, out, bfSize, bf_key, ivec2, BF_DECRYPT);
+
+	//printf("BF_DECRYPT: %s | Len: %i\n", out, (int)strlen(out));
+
+	// ------------- EK0 done & created -------------
+
 
 }
 
