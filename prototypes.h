@@ -3,5 +3,6 @@
 
 void createLog(char[]);
 char *getCertificate(char*);
+char *createKey(int);
 
 #endif
