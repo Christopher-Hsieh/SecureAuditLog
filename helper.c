@@ -65,8 +65,8 @@ char* publicKeyEncrypt(char* pub_key, char* sessionKey){
 
 char* encrypt(char *strToEncypt, char* key) {
     int bfSize = strlen(strToEncypt);
-    BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
 
+    BF_KEY *bf_key = malloc((bfSize*2 + 1) * sizeof(*bf_key));
     // Turn key into BF key
     BF_set_key(bf_key, bfSize, key);
 

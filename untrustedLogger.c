@@ -14,11 +14,6 @@
 char *sessionKey = NULL;
 int SIZE_OF_RSA = 16;
 
-struct X {
-	   	struct timeval d;
-	   	char*  Cu;
-	   	char*  A0;
-};
 
 char * fileToBuffer(FILE *fp) {
 	fseek(fp, 0L, SEEK_END);
@@ -45,9 +40,9 @@ U forms the rst log entry, L0:
 	W0 = LogleInitializationType
 	D0 = d; d+; IDlog; M0
 */
-void createFirstLogEntry(char* w0, struct X x0) {
+// void createFirstLogEntry(char* w0, struct X x0) {
 	
-}
+// }
 
 /*
  * The logger creates and opens a new log file with the specified name. The logger
@@ -108,6 +103,7 @@ void createLog(char fileName[]) {
 	// ------------- generate random session key K0 -------------
 	sessionKey = createKey(SIZE_OF_RSA);
 
+
 	// ------------- Encrypt using PKE --------------
 	char *encrypted = publicKeyEncrypt(tpub_key, sessionKey);
 
@@ -129,14 +125,15 @@ void createLog(char fileName[]) {
 	// ------------- ignore protocol step identifier p (according to TA) -------------
 
 	// ------------- create X0 from existing variables -------------
-	// struct X {
-	//    	struct timeval d;
-	//    	char  Cu[strlen(certificate) + 1];
-	//    	char  A0[strlen(authKey) + 1];
-	// } X0;
-	struct X X0;
+	struct X {
+	   	struct timeval d;
+	   	char  Cu[strlen(certificate) + 1];
+	   	char  A0[strlen(authKey) + 1];
+	} X0;
+	//struct X X0;
 
 	X0.d = timeStamp;
+
 	strcpy(X0.Cu, certificate);
 	strcpy(X0.A0, authKey); 
 
