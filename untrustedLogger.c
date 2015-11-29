@@ -180,34 +180,11 @@ void createLog(char fileName[]) {
 			// A0 - random start point
 
 	// ------------- Turn K0 into BF key for symmetric enc -------------
-	int bfSize = strlen(toCharPointHelper(X0.Cu, X0.A0));
-
-	BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
-
-	BF_set_key(bf_key, bfSize, sessionKey);
-
-	//printf("Session Key: %s\n", sessionKey);
-
-	char *Ek0 = malloc((bfSize + 1) * sizeof(*Ek0));
-
-	//printf("X0:  %s | Len: %i\n", toCharPointHelper(X0.Cu, X0.A0), bfSize);
-
-	char * ivec = malloc((bfSize + 1) * sizeof(*Ek0));
-	BF_cbc_encrypt(toCharPointHelper(X0.Cu, X0.A0), Ek0, bfSize, bf_key, ivec, BF_ENCRYPT);
-
-	//printf("Ek0: %s | Len: %i\n", Ek0, (int)strlen(Ek0));
-
-	unsigned char *out = malloc((bfSize + 1) * sizeof(*Ek0));
-	//BF_ecb_encrypt(Ek0, out, bf_key, BF_DECRYPT);
-	char * ivec2 = malloc((bfSize + 1) * sizeof(*Ek0));
-
-	BF_cbc_encrypt(Ek0, out, bfSize, bf_key, ivec2, BF_DECRYPT);
-
-	//printf("BF_DECRYPT: %s | Len: %i\n", out, (int)strlen(out));
+	unsigned char *out = malloc((strlen(toCharPointHelper(X0.Cu, X0.A0)) + 1) * sizeof(*out));
+	out = encrypt(toCharPointHelper(X0.Cu, X0.A0), sessionKey);
 
 	// ------------- EK0 done & created -------------
 
 
 }
-
 
