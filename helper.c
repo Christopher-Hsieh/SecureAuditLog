@@ -3,6 +3,8 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include <openssl/blowfish.h>
+
 /*
     functions that are shared b/t trusted & untrusted
 */
@@ -24,4 +26,20 @@ char *createKey(int length) {
     }
 
     return currentKey;
+}
+
+
+char* encrypt(char *strToEncypt, char* key) {
+    int bfSize = strlen(strToEncypt);
+    BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
+
+    // Turn key into BF key
+    BF_set_key(bf_key, bfSize, key);
+
+    char *encryptedStr = malloc((bfSize + 1) * sizeof(*encryptedStr));
+
+    char * ivec = malloc((bfSize + 1) * sizeof(*encryptedStr));
+    BF_cbc_encrypt(strToEncypt, encryptedStr, bfSize, bf_key, ivec, BF_ENCRYPT);
+
+    return encryptedStr;
 }
