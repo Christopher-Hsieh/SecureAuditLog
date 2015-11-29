@@ -50,7 +50,7 @@ char* publicKeyEncrypt(char* pub_key, char* sessionKey){
 
     // printf("RESULT:%i\n", result);
     if (result == -1) {
-        char * err = malloc(130);;
+        char * err = malloc(130);
         ERR_load_crypto_strings();
         ERR_error_string(ERR_get_error(), err);
         printf("ERROR: %s\n", err);
@@ -61,6 +61,18 @@ char* publicKeyEncrypt(char* pub_key, char* sessionKey){
     // printf("HERE IS ENCRYPTED: %s\n", encrypted);
 
     return encrypted;
+}
+
+char* publicKeyDecrypt(RSA* priv_key, char* encrypted){
+    char *decrypted = malloc((RSA_size(priv_key) + 1) * sizeof(*decrypted));
+    if(RSA_private_decrypt(strlen(encrypted), (unsigned char*)encrypted, (unsigned char*)decrypted,
+                           priv_key, RSA_NO_PADDING) == -1) {
+        char * err = malloc(130);
+        ERR_load_crypto_strings();
+        ERR_error_string(ERR_get_error(), err);
+        fprintf(stderr, "Error decrypting message: %s\n", err);
+    }
+    return decrypted;
 }
 
 char* encrypt(char *strToEncypt, char* key) {

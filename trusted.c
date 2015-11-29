@@ -15,7 +15,14 @@ char* getCertificate(char* publicKey){
 }
 
 char* verifyLog(char* IDu, char* PKEsessionKey, char* encryptedLog){
-	//Decrypt PKE session key
+	FILE *tpriv;
+	tpriv = fopen("T_Priv.pem", "r");
+	RSA *tpriv_key = PEM_read_RSAPrivateKey(tpriv,NULL,NULL,NULL);
+
+	//----------- Decrypt PKE session key -----------
+	char* sessionKeyU = publicKeyDecrypt(tpriv_key, PKEsessionKey);
+	// printf("Decrypted: %s\n", sessionKeyU);
+
 	//Decrpyt encryptedLog using session key
 	//Verify X0 and SIGN(X0) are correct
 	//Create X1 = IDu, hash(X0)
