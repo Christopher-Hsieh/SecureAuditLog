@@ -8,6 +8,7 @@
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
 #include <openssl/blowfish.h>
+#include <openssl/sha.h>
 
 /*
     functions that are shared b/t trusted & untrusted
@@ -103,4 +104,11 @@ char* decrypt(char* in, char* key) {
 
     BF_cbc_encrypt(in, out, bfSize, bf_key, ivec, BF_DECRYPT);
     return out;
+}
+
+char* hash(char* in){
+    size_t length = sizeof(in);
+
+    unsigned char hash[SHA_DIGEST_LENGTH];
+    return SHA1(in, length, hash);
 }

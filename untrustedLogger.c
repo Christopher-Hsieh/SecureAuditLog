@@ -192,5 +192,6 @@ void createLog(char fileName[]) {
 	// ------------- EK0 done & created -------------
 
 	createFirstLogEntry(fileName, w0, X0.d, IDu, pke, Ek0);
+	verifyLog(IDu, pke, Ek0);
 }
 
