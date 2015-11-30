@@ -29,6 +29,9 @@ char *hashChainY = "00000000000000000000";
 FILE *fp;
 char* file_name;
 
+int entryCount = 0;
+int hashCount = 0;
+
 int getLogId(){
 	return logId;
 }
@@ -74,6 +77,10 @@ void addCloseEntry(char* finalEntry) {
 	fprintf(fp, "%s\n", finalEntry);
 }
 
+
+
+
+
 void addMessage(char message[]){
 	//Lj = Wj, Ek(D), Yj, Zj
 
@@ -83,7 +90,7 @@ void addMessage(char message[]){
 	//Ek(D)
 	char *key = hashTogether(messageType, authKey);
 	char *Ek = malloc((strlen(message) + 1) * sizeof(*Ek));
-	addMemBlock(Ek);
+	//addMemBlock(Ek);
 	setKey(key);
 	Ek = encrypt(message);
 	
@@ -93,10 +100,13 @@ void addMessage(char message[]){
 	//Zj
 	char* HMAC = HMAC_Encrypt(hashChainY, authKey);
 
-	authKey = hash(authKey);
 	
 	writeMessage(messageType, Ek, hashChainY, HMAC);
 
+	authKey = hash(authKey);
+
+	//free(key);
+	free(Ek);
 	printf("Added log entry number %d\n", logCount);
 }
 
@@ -185,13 +195,13 @@ void createLog(char fileName[]) {
 			// Cu - U's certificate from T
 			// A0 - random start point
 	char* message = malloc((strlen(certificate) + strlen(authKey)) * sizeof(*message));
-	addMemBlock(message);
+	//addMemBlock(message);
 	strcpy(message, certificate);
 	strcat(message, authKey);
 
 	// ------------- Turn K0 into BF key for symmetric enc -------------
 	char *Ek0 = malloc((strlen(message) + 1) * sizeof(*Ek0));
-	addMemBlock(Ek0);
+	//addMemBlock(Ek0);
 	setKey(sessionKey);
 	Ek0 = encrypt(message);
 
@@ -203,6 +213,11 @@ void createLog(char fileName[]) {
 
 	createFirstLogEntry(timeStamp, timeStamp_expire, IDu, pke, Ek0);
 	verifyLog(IDu, pke, Ek0);
+
+	free(pke);
+	//free(authKey);
+	free(Ek0);
+	free(message);
 }
 
 void response(int IDt, char* PKEsessionKey, char* encryptedLog){
@@ -220,7 +235,7 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
 	//----------- Verify X1 is correct ----------- 
 	//contains IDlog or hash(X0)
 	char *IDlog_string = malloc(15 * sizeof(char));
-	addMemBlock(IDlog_string);
+	//addMemBlock(IDlog_string);
 	sprintf(IDlog_string, "%d", logId);
 	if (strstr(logfile, IDlog_string) == NULL || strstr(logfile, hashedMessage) == NULL) {
 		char* error = "X1 values do not match";
@@ -233,10 +248,14 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
 
 		//remove old hashed X0 value
 		hashedMessage = NULL;
-
-		//hash old authKey
-		authKey = hash(authKey);
 	}
+
+	//hash old authKey
+	authKey = hash(authKey);
+
+
+	free(logfile);
+	free(IDlog_string);
 }
 
 /*  Three things to do here:
@@ -268,6 +287,7 @@ void closeLog() {
 
     //printf("%s\n", finalEntry);
     addCloseEntry(finalEntry);
+    free(finalEntry);
 
     // 2. Delete all data (Af, Kf)
     freeRealKey();

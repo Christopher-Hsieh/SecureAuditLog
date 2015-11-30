@@ -95,10 +95,10 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Create X1 = IDlog, hash(X0) ----------- 
 	char *IDlog_string = malloc(15 * sizeof(char));
-	addMemBlock(IDlog_string);
+	//addMemBlock(IDlog_string);
 	sprintf(IDlog_string, "%d", getLogId());
 	char* X = malloc((strlen(IDlog_string) + strlen(hashedLogfile)) * sizeof(char));
-	addMemBlock(X);
+	//addMemBlock(X);
 	strcpy(X, IDlog_string);
 	strcat(X, hashedLogfile);
 
@@ -115,11 +115,15 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	//encrypt X using session key
 	setKey(sessionKey);
 	char* E = malloc((strlen(X) + 1) * sizeof(char));
-	addMemBlock(E);
+	//addMemBlock(E);
 	E = encrypt(X);
 
 	//----------- Create M1 = IDt, PKE(K1), E(X1, SIGN(X1)) ----------- 
 	response(IDt, PKEu, E);
+	free(sessionKey);
+	free(PKEu);
+	free(E);
+	free(X);
 }
 
 
@@ -171,34 +175,66 @@ int mkcert(X509 **x509p, EVP_PKEY **pkeyp, int bits, int serial, int days) {
 
 
 void getEntryKeys_Trusted(char** entries, char** keys, int line_count) {
+	printf("\nGetting the Keys\n----------------\n");
+	printf("LINECOUNT: %d\n", line_count);
 	// Get Wj
 	char *strtok_ctx;
-	char *s = strdup(entries[line_count-1]);
+	//printf("strup trying this thing:%s\n", entries[1]);
+	char *s = strdup(entries[2]);
+	char* Wj;
+	char* Yj;
+	char* Zj;
 
-	char* Wj = strtok_r(s, "\t", &strtok_ctx);
-	printf("%s\n", Wj);
 
-	char* Yj = strtok_r(NULL, "||", &strtok_ctx);
-	if (Yj == NULL) {return NULL;}
-
-	char* Zj = strtok_r(NULL, "||", &strtok_ctx);
-	if (Zj == NULL) {return NULL;}
-
-	//printf("%s\n", Yj);
-	//printf("%s\n", Zj);
-
-	// Calculate Af
-	int i;
-	char* Af;
-	strcpy(Af, A0);
-	for (i = 0; i < line_count; i++) {
-		Af = hash(Af);
+	if (s == NULL) { 
+		printf("S is NULL\n");
 	}
+	else {
+		//printf("Getting Wj\n");
+		 Wj = strtok_r(s, "\t", &strtok_ctx);
+		//printf("%s\n", Wj);
+		//printf("Getting Yj\n");
+
+		Yj = strtok_r(NULL, "||", &strtok_ctx);
+		printf("Yj: %s\n", Yj);
+		if (Yj != NULL) {
+			Zj = strtok_r(NULL, "||", &strtok_ctx);
+		}
+		if (Zj != NULL) {
+			//printf("%s\n", Yj);
+			//printf("%s\n", Zj);
+		}
+	}
+	// Calculate Af
+	printf("A0: %s\n", A0);
+	int i;
+	char* Af = malloc((strlen(A0)+1)* sizeof(*A0));
+	strcpy(Af, A0);
+	// for (i = 0; i < line_count; i++) {
+	// 	Af = hash(Af);
+	// }
+
+	// Print A0 and its HMAC
+	printf("A0: %s HMACA0: %s\n", Af, HMAC_Encrypt(Yj, Af));
+
+	// Print A1 and its HMAC
+	Af = hash(Af);
+	printf("A1: %s HMACA1: %s\n", Af, HMAC_Encrypt(Yj, Af));
+
+	Af = hash(Af);
+	printf("A2: %s HMACA2: %s\n", Af, HMAC_Encrypt(Yj, Af));
+
+	Af = hash(Af);
+	printf("A3: %s HMACA3: %s\n", Af, HMAC_Encrypt(Yj, Af));
+
 
 	// HMACaf = ...
 	// TODO compare HMACaf instad
 	//Zj
 	char* HMAC = HMAC_Encrypt(Yj, Af);
+
+	printf("HMAC:%s | Zj:%s\n", HMAC, Zj);
+
 	if(strcmp(Zj, HMAC) != 0) {//Not a match
 		printf("Zj & HMAC did not match\n");
 		return NULL;
@@ -214,4 +250,5 @@ void getEntryKeys_Trusted(char** entries, char** keys, int line_count) {
 		keys[i] = malloc((strlen(Kj) + 1)*sizeof(keys[i]));
 		strcpy(keys[i], Kj);
 	}
+
 }

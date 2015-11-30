@@ -12,18 +12,27 @@ void getEntries(char*, char**, char**);
 
 void verifyEntryNum(int entrynum) {
 
-
+	closeLogfp();
 	int linecount = getNumOfLinesInFile(getFileName());
+	//printf("linecount%d\n", linecount);
 	char* entryKeys[linecount];
 	char* entryData[linecount];
-	getEntryKeys_Verifier(entryData, entryKeys);
+	getEntryKeys_Verifier(entryData, entryKeys, linecount);
 
 	if (entryKeys == NULL || linecount < entrynum) {
 		printf("Failed Verification\n");
-		return;
+	} else {
+		setKey(entryKeys[entrynum]);
+		printf("%s\n", decrypt(entryData[entrynum]));
 	}
-	setKey(entryKeys[entrynum]);
-	printf("%s\n", decrypt(entryData[entrynum]));
+
+	int i = 0;
+	for(; i < linecount; i++) {
+		if (entryKeys[i] != NULL)
+			free(entryKeys[i]);
+		if(entryData[i] != NULL)
+			free(entryData[i]);
+	}
 
 };
 
@@ -49,7 +58,7 @@ void verifyAll(char* logFile, char* outFile) {
 	Send this list to T, which returns a list of keys.
 	If T returns NULL, it failed.
  */
-void getEntryKeys_Verifier(char** entryData, char** entryKeys) {
+void getEntryKeys_Verifier(char** entryData, char** entryKeys, int line_count) {
 
 	/*
 	 Types of messages to verify
@@ -61,13 +70,14 @@ void getEntryKeys_Verifier(char** entryData, char** entryKeys) {
 	 */
 
 	// Get the file in an array of strings
-	int line_count = getNumOfLinesInFile(getFileName());
+	//int line_count = getNumOfLinesInFile(getFileName());
 	char* entries[line_count];
 	
-	getEntries(getFileName(), &entries, &entryData);
+	printf("Getting the Entries\n------------\n");
+	getEntries(getFileName(), entries, entryData);
 
 	// Recieve Keys, from T, for each entry
-	getEntryKeys_Trusted(&entries, &entryKeys, line_count);
+	getEntryKeys_Trusted(entries, entryKeys, line_count);
 }
 
 
@@ -81,6 +91,8 @@ void getEntries(char* fileName, char** entries, char **entryData) {
 	//char* entries[line_count];// = (char **)malloc((getLengthOfFile(fileName)+16)*sizeof(char*));
 
 	// Set up to read the file
+	//closeLogfp();
+
 	FILE *fp;
 	fp = fopen(fileName, "r");
 
@@ -96,6 +108,7 @@ void getEntries(char* fileName, char** entries, char **entryData) {
     while ((read = getline(&line, &len, fp)) != -1) {
     	entries[index] = malloc((strlen(line)+1)*sizeof(entries[index]));
 		strcpy(entries[index], line);
+		printf("Entry[%d]: %s\n",index, entries[index] );
 
     	entryData[index] = malloc((strlen(line)+1)*sizeof(entryData[index]));
 
@@ -111,12 +124,14 @@ void getEntries(char* fileName, char** entries, char **entryData) {
 
 		if (data != NULL) {
 			strcpy(entryData[index], data);
+			printf("Data[%d]: %s\n", index, data);
 		}
 
 
 		index++;
     }
 
+    fclose(fp);
 	return entries;
 }
 
