@@ -174,8 +174,15 @@ void createLog(char fileName[]) {
 
 
 	// ------------- EK0 done & created -------------
-
+ 
 	verifyLog(IDu, pke, Ek0);
 	//createFirstLogEntry(fileName, w0, X0.d, IDu, pke, Ek0);
 }
 
+/*
+  Closing the log file involves 3 things:
+  1. Write to the log file final entry: NormalCloseMessage
+  2. Delete Af and Kf
+  3. Close the file
+ */
+void closeLog(){}

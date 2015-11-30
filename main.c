@@ -8,6 +8,11 @@
 #include "prototypes.h"
 
 int LogNumber = 0;
+int currEntry = 0;
+
+int getCurrEntry() {
+	return currEntry++;
+}
 
 void incLogNum() {
 	LogNumber++;
