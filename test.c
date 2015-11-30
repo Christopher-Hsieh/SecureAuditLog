@@ -6,9 +6,10 @@ void main (int argc, char *argv[]) {
 	initRealKey();
 	createLog("testLog");
 
-	closeLog();
+
+	//closeLog();
 
 	// verifyEntryNum(0);
 
-	verifyTest();
+	//verifyTest();
  }

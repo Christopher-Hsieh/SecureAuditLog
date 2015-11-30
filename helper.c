@@ -67,13 +67,13 @@ char* publicKeyEncrypt(char* pub_key, char* sessionKey){
     encrypted[result] = '\0';
 
     // printf("RESULT:%i\n", result);
-    if (result == -1) {
-        char * err = malloc(130);
-        ERR_load_crypto_strings();
-        ERR_error_string(ERR_get_error(), err);
-        printf("ERROR: %s\n", err);
-        free(err);
-    }
+    // if (result == -1) {
+    //     char * err = malloc(130);
+    //     ERR_load_crypto_strings();
+    //     ERR_error_string(ERR_get_error(), err);
+    //     printf("ERROR: %s\n", err);
+    //     free(err);
+    // }
     // printf("%s\n",pub_key);
     // printf("%s\n", privbuffer);
     // printf("HERE IS ENCRYPTED: %s\n", encrypted);

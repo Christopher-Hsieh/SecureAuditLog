@@ -116,7 +116,7 @@ void createLog(char fileName[]) {
 
 	FILE *upub;
 	upub = fopen("U_Pub.pub", "r");
-	char *upub_key = fileToBuffer(upub);
+	unsigned char *upub_key = fileToBuffer(upub);
 
 	FILE *tpub;
 	tpub = fopen("T_Pub.pub", "r");

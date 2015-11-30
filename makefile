@@ -27,7 +27,7 @@ helper.o: helper.c
 
 # Clean everything
 clean: 
-	rm testLog *.o run_me test
+	rm -f testLog *.o run_me test
 
 # Clean the tests
 cleantest:

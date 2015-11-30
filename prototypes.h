@@ -4,7 +4,7 @@
 // FUNCTIONS ONLY PARTIALLY ORGANIZED
 
 void createLog(char[]);
-char* getCertificate(char*);
+char* getCertificate(unsigned char*);
 char* createKey(int);
 char* publicKeyEncrypt(char*, char*);
 char* publicKeyDecrypt(RSA*, char*);
