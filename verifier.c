@@ -25,19 +25,19 @@ void verifyEntryNum(int line_num) {
 	while ((read = getline(&line, &len, fp)) != -1) {
 		if (currLineNo == line_num) break;
 		//printf("Retrieved line of length %zu :\n", read);
-		printf("Line Num:%i, %s\n", currLineNo, line);
+		//printf("Line Num:%i, %s\n", currLineNo, line);
 
 		currLineNo++;
     }
 
     // File ended before we found the entry print error
     if (currLineNo != line_num) {
-    	printf("Failed Verification\n");
+    	//printf("Failed Verification\n");
     }
     // Else we process the line we hit
     else {
     	//TODO
-    	printf("Found our line: %s\n", line);
+    	//printf("Found our line: %s\n", line);
     }
 
     fclose(fp);
@@ -52,5 +52,24 @@ void verifyAll(char* logFile, char* outFile) {
 // Returns: NULL for failure or The decrypted message
 char* verifyLine(char* line) {
 
+	/*
+	 Types of messages to verify
+		LogFileInitializationType
+		ResponseMessageType
+		AbnormalCloseType
+		NormalCloseMessage
+		AddMessageType
+	 */
+
+	/* 
+		Create Message to send to T it contains:
+		IDlog - ID of the log we are working with
+		f - index of last entry in the log
+		Yf - Hash chain
+		Zf  = MACaj(Yj)
+
+	*/
+
+	// Recieve Decryption key for that record
 	return NULL;
 }

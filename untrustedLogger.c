@@ -235,7 +235,7 @@ void createFirstLogEntry(struct timeval d, struct timeval d_plus,
 
 void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
 	//Wj		< IDt, PKEpku(K), Ek(X) >
-	printf("Hello\n");
+
 	//W0
 	fprintf(fp, "ResponseMessageType\t");
 	//IDu
@@ -272,7 +272,7 @@ void closeLog() {
    
     char finalEntry[256+strlen(tmbuf)];
 
-    strcat(finalEntry, "NormalCloseMessage,");
+    strcat(finalEntry, "NormalCloseMessage\t");
     strcat(finalEntry, tmbuf);
 
     //printf("%s\n", finalEntry);
