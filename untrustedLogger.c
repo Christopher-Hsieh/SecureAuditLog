@@ -229,12 +229,9 @@ void closeLog() {
     nowtm = localtime(&nowtime);
     strftime(tmbuf, sizeof(tmbuf), "%Y-%m-%d %H:%M:%S", nowtm);
 
-    //tmbuf
-    //char* finalEntry = malloc((19+strlen(tmbuf))*sizeof(finalEntry));
-   
-    char finalEntry[256+strlen(tmbuf)];
+    char* finalEntry = malloc((25+strlen(tmbuf))*sizeof(finalEntry));
 
-    strcat(finalEntry, "NormalCloseMessage,");
+    strcpy(finalEntry, "NormalCloseMessage\t");
     strcat(finalEntry, tmbuf);
 
     //printf("%s\n", finalEntry);

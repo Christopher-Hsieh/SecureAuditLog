@@ -11,19 +11,19 @@ test: test.o untrustedLogger.o trusted.o verifier.o helper.o
 
 
 main.o: main.c
-	gcc -c main.c
+	gcc -g -c main.c
 
 untrustedLogger.o: untrustedLogger.c
-	gcc -c untrustedLogger.c -lssl -lcrypto
+	gcc -g -c untrustedLogger.c -lssl -lcrypto
 
 trusted.o: trusted.c
-	gcc -c trusted.c -lssl -lcrypto
+	gcc -g -c trusted.c -lssl -lcrypto
 
 verifier.o: verifier.c
-	gcc -c -w verifier.c -lssl -lcrypto
+	gcc -g -c -w verifier.c -lssl -lcrypto
 
 helper.o: helper.c
-	gcc -c helper.c -lssl -lcrypto
+	gcc -g -c helper.c -lssl -lcrypto
 
 # Clean everything
 clean: 

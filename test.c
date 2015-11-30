@@ -8,5 +8,7 @@ void main (int argc, char *argv[]) {
 
 	closeLog();
 
-	verifyEntryNum(0);
+	// verifyEntryNum(0);
+
+	verifyTest();
  }
