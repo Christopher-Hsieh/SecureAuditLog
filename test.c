@@ -7,7 +7,7 @@ void main (int argc, char *argv[]) {
 
 	createLog("testLog");
 
-	closeLog();
+	//closeLog();
 	
 	verifyTest();
  }

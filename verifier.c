@@ -159,7 +159,14 @@ void verifyTest() {
 	//printf("%i\n", getNumOfLinesInFile(getFileName()));
 	//getEntries(getFileName());
 	//verifyEntryNum(2);
-	char* entries[10];
+	//char* entries[10];
 	//getEntryKeys_Verifier(entries);
-	verifyAll("testLog", "outFile");
+	//printf("Added message\n");
+	char message[5] = "Msg\0";
+	char message2[6] = "Msg2\0";
+
+	addMessage(message);
+	//addMessage(message2);
+	//printf("Added message\n");
+	verifyEntryNum(1);
 }
