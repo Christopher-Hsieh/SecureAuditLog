@@ -16,7 +16,7 @@ untrustedLogger.o: untrustedLogger.c
 	gcc -g -c untrustedLogger.c -lssl -lcrypto
 
 trusted.o: trusted.c
-	gcc -g -c trusted.c -lssl -lcrypto
+	gcc -g -c -w trusted.c -lssl -lcrypto
 
 verifier.o: verifier.c
 	gcc -g -c -w verifier.c -lssl -lcrypto

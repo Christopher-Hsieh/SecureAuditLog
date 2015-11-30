@@ -16,7 +16,6 @@ char* hashTogether(char*, char*);
 void response(int, char*, char*);
 char* getLogName(void);
 void addMessage(char[]);
-char* getCertificate(char*);
 
 /* main.c */
 int getLogId(void);
