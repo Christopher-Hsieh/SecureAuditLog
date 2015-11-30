@@ -36,8 +36,21 @@ void verifyEntryNum(int line_num) {
     }
     // Else we process the line we hit
     else {
+    	//TODO
     	printf("Found our line: %s\n", line);
     }
 
     fclose(fp);
+}
+
+void verifyAll(char* logFile, char* outFile) {
+	FILE *fp;
+	fp = fopen(logFile, "r");
+}
+
+// Takes in a line to verify
+// Returns: NULL for failure or The decrypted message
+char* verifyLine(char* line) {
+
+	return NULL;
 }

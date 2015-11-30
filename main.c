@@ -43,7 +43,11 @@ void main (int argc, char *argv[]) {
 
 		// Verify all cmd
 		else if (strncmp(buffer, "verifyall", 9) == 0) {
-			//TODO
+			char log_file_name[128];
+			char out_file_name[128];
+			scanf("%s", log_file_name);
+			scanf("%s", out_file_name);
+			verifyAll(log_file_name, out_file_name);
 		}
 
 		else if (strcmp(buffer, "exit") == 0) {

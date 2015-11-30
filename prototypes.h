@@ -35,4 +35,7 @@ void freeSessionKey();
 void closeLogfp();
 char* getFileName();
 
+/* verifier.c */
+void verifyAll(char*, char*);
+
 #endif
