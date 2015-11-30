@@ -27,6 +27,10 @@ char* getUHash(){
 	return hashedMessage;
 }
 
+void freeSessionKey() {
+	free(sessionKey);
+}
+
 char * fileToBuffer(FILE *fp) {
 	fseek(fp, 0L, SEEK_END);
 
@@ -42,6 +46,17 @@ char * fileToBuffer(FILE *fp) {
 	return buffer;
 }
 
+FILE *fp;
+
+FILE * closeLogfp() {
+	fclose(fp);
+}
+
+void addCloseEntry(char* finalEntry) {
+	fprintf(fp, "\nEntry:");
+	fprintf(fp, "%d", getCurrEntry());
+	fprintf(fp, "%s\n", finalEntry);
+}
 
 /*
 U forms the first log entry, L0:
@@ -51,7 +66,7 @@ U forms the first log entry, L0:
 */
 void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus,
 						 int IDu, char* PKEpkt, char* Ek0) {
-	FILE *fp;
+
 	fp = fopen(filename, "w+");
 	
 	//W0, d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0))
@@ -76,8 +91,6 @@ void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus
 
 	//Ek0(X0) 
 	fprintf(fp, "%s>\n", Ek0);
-
-	fclose(fp);
 
 }
 
