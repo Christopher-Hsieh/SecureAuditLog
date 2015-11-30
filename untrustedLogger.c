@@ -142,7 +142,7 @@ void createLog(char fileName[]) {
 	char *certificate = getCertificate(upub_key); //this call currently just returns static string
 
 	// ------------- generate authentication key A0 -------------
-	authKey = createKey(SIZE_OF_RSA);
+	authKey = hash(createKey(SIZE_OF_RSA));
 
 	// ------------- ignore protocol step identifier p (according to TA) -------------
 
@@ -203,8 +203,8 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
 		//remove old hashed X0 value
 		hashedMessage = NULL;
 
-		//calculate new authentication value for A
-		authKey = createKey(SIZE_OF_RSA);
+		//hash old authKey
+		authKey = hash(authKey);
 	}
 }
 
