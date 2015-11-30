@@ -36,6 +36,7 @@ char *createKey(int length) {
 
     char *currentKey = NULL;
      currentKey = malloc(sizeof(char) * (length +1));
+     addMemBlock(currentKey);
 
     if (currentKey) {    
       	int n;        
@@ -63,6 +64,7 @@ char* publicKeyEncrypt(char* pub_key, char* sessionKey){
     // Where we send the key to 
     RSA *rsa = createRSA(pub_key);
     char *encrypted = malloc((RSA_size(rsa) + 1) * sizeof(*encrypted));
+    addMemBlock(encrypted);
     int result = RSA_public_encrypt(strlen(sessionKey), sessionKey, encrypted, rsa, RSA_PKCS1_PADDING);
     encrypted[result] = '\0';
 
@@ -83,6 +85,7 @@ char* publicKeyEncrypt(char* pub_key, char* sessionKey){
 
 char* publicKeyDecrypt(RSA* priv_key, char* encrypted){
     char *decrypted = malloc((RSA_size(priv_key) + 1) * sizeof(*decrypted));
+    addMemBlock(decrypted);
     if(RSA_private_decrypt(strlen(encrypted), (unsigned char*)encrypted, (unsigned char*)decrypted,
                            priv_key, RSA_PKCS1_PADDING) == -1) {
         char * err = malloc(130);
@@ -112,16 +115,20 @@ char* encrypt(char *strToEncypt) {
     int bfSize = strlen(strToEncypt);
 
     BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
+
     // Turn key into BF key
     BF_set_key(bf_key, bfSize, realKey);
 
     char *encryptedStr = malloc((bfSize + 1) * sizeof(*encryptedStr));
+    addMemBlock(encryptedStr);
 
     int n = 0;
     char ivec[8];
     memset(ivec, 0, 8);
 
     BF_cfb64_encrypt(strToEncypt, encryptedStr, bfSize, bf_key, ivec, &n, BF_ENCRYPT);
+
+    free(bf_key);
 
     return encryptedStr;
 }
@@ -135,6 +142,7 @@ char* decrypt(char* in) {
     BF_set_key(bf_key, bfSize, realKey);
 
     char *out = malloc((bfSize + 1) * sizeof(*out));
+    addMemBlock(out);
 
     int n = 0;
     char ivec[8];
@@ -142,12 +150,15 @@ char* decrypt(char* in) {
 
     BF_cfb64_encrypt(in, out, bfSize, bf_key, ivec, &n, BF_DECRYPT);
 
+    free(bf_key);
+
     return out;
 }
 
 char* hash(char* in){
     size_t length = sizeof(in);
     unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
+    addMemBlock(hash);
     SHA1(in, length, hash);
     return hash;
 }
@@ -159,6 +170,7 @@ char* hashTogether(char* in_1, char* in_2){
 
     size_t length = sizeof(out);
     unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
+    addMemBlock(hash);
     SHA1(out, length, hash);
     return hash;
 }

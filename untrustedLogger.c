@@ -71,6 +71,10 @@ void addCloseEntry(char* finalEntry) {
 	fprintf(fp, "%s\n", finalEntry);
 }
 
+void addMessage(char message[]){
+	printf("%s\n", message);
+}
+
 /*
  * The logger creates and opens a new log file with the specified name. The logger
  * should create a file with the given name in the current directory. According to
@@ -155,6 +159,7 @@ void createLog(char fileName[]) {
 			// Cu - U's certificate from T
 			// A0 - random start point
 	char* message = malloc((strlen(certificate) + strlen(authKey)) * sizeof(*message));
+	addMemBlock(message);
 	strcpy(message, certificate);
 	strcat(message, authKey);
 
@@ -162,6 +167,7 @@ void createLog(char fileName[]) {
 
 	// ------------- Turn K0 into BF key for symmetric enc -------------
 	char *Ek0 = malloc((strlen(message) + 1) * sizeof(*Ek0));
+	addMemBlock(Ek0);
 	setKey(sessionKey);
 	Ek0 = encrypt(message);
 
@@ -190,6 +196,7 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
 	//----------- Verify X1 is correct ----------- 
 	//contains IDlog or hash(X0)
 	char *IDlog_string = malloc(15 * sizeof(char));
+	addMemBlock(IDlog_string);
 	sprintf(IDlog_string, "%d", logId);
 	if (strstr(logfile, IDlog_string) == NULL || strstr(logfile, hashedMessage) == NULL) {
 		char* error = "X1 values do not match";
@@ -214,6 +221,7 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
     3. Close the file 
  */
 void closeLog() {
+   freeMem();
     // 1. Add close entry. EntryCode: NormalCloseMessage; Timestamp
     /* 
         Below code to get the time copied from:
@@ -243,6 +251,7 @@ void closeLog() {
     freeSessionKey();
 
     //resetLogAndEntry();
+    // freeMem();
 
     // 3. Close the file 
     closeLogfp();

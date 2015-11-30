@@ -23,16 +23,16 @@ int mkcert(X509 **, EVP_PKEY **, int , int , int );
 
 char* getCertificate(char* publicKey){
 
-	X509 *cert;
-	EVP_PKEY *pubkey;
+	// X509 *cert;
+	// EVP_PKEY *pubkey;
 
-	d2i_x509(&cert, publicKey, strlen(publicKey));
-	pubkey = X509_get_pubkey(cert);
+	// d2i_x509(&cert, publicKey, strlen(publicKey));
+	// pubkey = X509_get_pubkey(cert);
 
-	RSA *rsa;
-	rsa = EVP_PKEY_get1_RSA(pubkey);
+	// RSA *rsa;
+	// rsa = EVP_PKEY_get1_RSA(pubkey);
 
-	mkcert(&x509, &publicKey, 512, 0, 365);
+	// mkcert(&x509, &publicKey, 512, 0, 365);
 
 	return "random_key";
 }
@@ -61,8 +61,10 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Create X1 = IDlog, hash(X0) ----------- 
 	char *IDlog_string = malloc(15 * sizeof(char));
+	addMemBlock(IDlog_string);
 	sprintf(IDlog_string, "%d", getLogId());
 	char* X = malloc((strlen(IDlog_string) + strlen(hashedLogfile)) * sizeof(char));
+	addMemBlock(X);
 	strcpy(X, IDlog_string);
 	strcat(X, hashedLogfile);
 
@@ -79,6 +81,7 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	//encrypt X using session key
 	setKey(sessionKey);
 	char* E = malloc((strlen(X) + 1) * sizeof(char));
+	addMemBlock(E);
 	E = encrypt(X);
 
 	//----------- Create M1 = IDt, PKE(K1), E(X1, SIGN(X1)) ----------- 

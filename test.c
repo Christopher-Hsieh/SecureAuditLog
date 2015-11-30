@@ -4,11 +4,10 @@
 
 void main (int argc, char *argv[]) {
 	initRealKey();
+
 	createLog("testLog");
 
 	closeLog();
-
-	// verifyEntryNum(0);
-
+	
 	verifyTest();
  }
