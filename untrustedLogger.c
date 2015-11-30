@@ -30,10 +30,6 @@ char * fileToBuffer(FILE *fp) {
 	return buffer;
 }
 
-// TODO, Add SIGNsku(X0) to this function
-char * toCharPointHelper(char Cu[], char A0[]) {
-	return strcat(Cu, A0);
-}
 
 /*
 U forms the first log entry, L0:
@@ -159,23 +155,6 @@ void createLog(char fileName[]) {
 	// ------------- ignore protocol step identifier p (according to TA) -------------
 
 	// ------------- create X0 from existing variables -------------
-	struct X {
-	   	struct timeval d;
-	   	char  Cu[strlen(certificate) + 1];
-	   	char  A0[strlen(authKey) + 1];
-	} X0;
-	//struct X X0;
-
-	X0.d = timeStamp;
-
-	strcpy(X0.Cu, certificate);
-	strcpy(X0.A0, authKey); 
-
-	// printf ("d: %d.%06d\n", (int)X0.d.tv_sec, (int)X0.d.tv_usec);
-	// printf("Cu: %s\n", X0.Cu);
-	// printf("A0: %s\n", X0.A0);
-
-
 	//Ek0(X0, SIGNsku(X0)) 
 		// Blowfish
 		// Symmetric encrption of X0, use key K0
@@ -184,14 +163,18 @@ void createLog(char fileName[]) {
 		// X0 = Cu, A0
 			// Cu - U's certificate from T
 			// A0 - random start point
+	char* message = malloc((strlen(certificate) + strlen(authKey)) * sizeof(*message));
+	strcpy(message, certificate);
+	strcat(message, authKey);
 
 	// ------------- Turn K0 into BF key for symmetric enc -------------
-	unsigned char *Ek0 = malloc((strlen(toCharPointHelper(X0.Cu, X0.A0)) + 1) * sizeof(*Ek0));
-	Ek0 = encrypt(toCharPointHelper(X0.Cu, X0.A0), sessionKey);
+	char *Ek0 = malloc((strlen(message) + 1) * sizeof(*Ek0));
+	Ek0 = encrypt(message, sessionKey);
+
 
 	// ------------- EK0 done & created -------------
 
-	createFirstLogEntry(fileName, w0, X0.d, IDu, pke, Ek0);
 	verifyLog(IDu, pke, Ek0);
+	//createFirstLogEntry(fileName, w0, X0.d, IDu, pke, Ek0);
 }
 

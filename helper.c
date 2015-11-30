@@ -79,30 +79,37 @@ char* publicKeyDecrypt(RSA* priv_key, char* encrypted){
 char* encrypt(char *strToEncypt, char* key) {
     int bfSize = strlen(strToEncypt);
 
-    BF_KEY *bf_key = malloc((bfSize*2 + 1) * sizeof(*bf_key));
+    BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
     // Turn key into BF key
     BF_set_key(bf_key, bfSize, key);
 
     char *encryptedStr = malloc((bfSize + 1) * sizeof(*encryptedStr));
 
-    char * ivec = malloc((bfSize + 1) * sizeof(*encryptedStr));
-    BF_cbc_encrypt(strToEncypt, encryptedStr, bfSize, bf_key, ivec, BF_ENCRYPT);
+    int n = 0;
+    char ivec[8];
+    memset(ivec, 0, 8);
+
+    BF_cfb64_encrypt(strToEncypt, encryptedStr, bfSize, bf_key, ivec, &n, BF_ENCRYPT);
 
     return encryptedStr;
 }
 
 char* decrypt(char* in, char* key) {
+
     int bfSize = strlen(in);
 
     BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
     // Turn key into BF key
     BF_set_key(bf_key, bfSize, key);
 
-    unsigned char *out = malloc((bfSize + 1) * sizeof(*out));
-    
-    char * ivec = malloc((bfSize + 1) * sizeof(*ivec));
+    char *out = malloc((bfSize + 1) * sizeof(*out));
 
-    BF_cbc_encrypt(in, out, bfSize, bf_key, ivec, BF_DECRYPT);
+    int n = 0;
+    char ivec[8];
+    memset(ivec, 0, 8);
+
+    BF_cfb64_encrypt(in, out, bfSize, bf_key, ivec, &n, BF_DECRYPT);
+
     return out;
 }
 
@@ -111,4 +118,9 @@ char* hash(char* in){
 
     unsigned char hash[SHA_DIGEST_LENGTH];
     return SHA1(in, length, hash);
+}
+
+void closeLog() {
+    // Entry Number
+
 }
