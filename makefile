@@ -20,7 +20,7 @@ trusted.o: trusted.c
 	gcc -c trusted.c -lssl -lcrypto
 
 verifier.o: verifier.c
-	gcc -c verifier.c -lssl -lcrypto
+	gcc -c -w verifier.c -lssl -lcrypto
 
 helper.o: helper.c
 	gcc -c helper.c -lssl -lcrypto

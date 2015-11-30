@@ -52,14 +52,22 @@ char * fileToBuffer(FILE *fp) {
 }
 
 FILE *fp;
+char* file_name;
+
+void setFileName(char* str) {
+	file_name = malloc((strlen(str) + 1 )*sizeof(file_name));
+	strcpy(file_name, str);
+}
+
+char* getFileName() {
+	return file_name;
+}
 
 void closeLogfp() {
 	fclose(fp);
 }
 
 void addCloseEntry(char* finalEntry) {
-	fprintf(fp, "\nEntry:");
-	fprintf(fp, "%d", getCurrEntry());
 	fprintf(fp, "%s\n", finalEntry);
 }
 
