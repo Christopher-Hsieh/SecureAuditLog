@@ -38,14 +38,22 @@ char * fileToBuffer(FILE *fp) {
 }
 
 FILE *fp;
+char* file_name;
 
-FILE * closeLogfp() {
+void setFileName(char* str) {
+	file_name = malloc((strlen(str) + 1 )*sizeof(file_name));
+	strcpy(file_name, str);
+}
+
+char* getFileName() {
+	return file_name;
+}
+
+void closeLogfp() {
 	fclose(fp);
 }
 
 void addCloseEntry(char* finalEntry) {
-	fprintf(fp, "\nEntry:");
-	fprintf(fp, "%d", getCurrEntry());
 	fprintf(fp, "%s\n", finalEntry);
 }
 
@@ -59,6 +67,7 @@ void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus
 						 int IDu, char* PKEpkt, char* Ek0) {
 
 	fp = fopen(filename, "w+");
+	setFileName(filename);
 	
 	//W0, d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0))
 

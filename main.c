@@ -31,12 +31,14 @@ void main (int argc, char *argv[]) {
 
 		// Close log cmd
 		else if (strcmp(buffer, "closelog") == 0) {
-			//TODO
+			closeLog();
 		}
 
 		// Verify entry_no cmd
 		else if (strncmp(buffer, "verify", 6) == 0) {
-			//TODO
+			int *line_no;
+			scanf("%i", line_no);
+			verifyEntryNum(line_no);
 		}
 
 		// Verify all cmd

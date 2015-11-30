@@ -178,8 +178,7 @@ void closeLog() {
    
     char finalEntry[256+strlen(tmbuf)];
 
-    strcat(finalEntry, "EntryCode:NormalCloseMessage");
-    strcat(finalEntry, "\nTime:");
+    strcat(finalEntry, "NormalCloseMessage,");
     strcat(finalEntry, tmbuf);
 
     //printf("%s\n", finalEntry);

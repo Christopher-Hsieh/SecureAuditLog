@@ -7,4 +7,6 @@ void main (int argc, char *argv[]) {
 	createLog("testLog");
 
 	closeLog();
+
+	verifyEntryNum(0);
  }
