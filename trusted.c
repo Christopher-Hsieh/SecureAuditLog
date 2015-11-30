@@ -67,7 +67,7 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	strcat(X, hashedLogfile);
 
 	//----------- Generate random session key K1 ----------- 
-	char* sessionKey = createKey(SIZE_OF_KEY);
+	char* sessionKey = hash(createKey(SIZE_OF_KEY));
 
 	//----------- Encrypt session info ----------
 	//encrypt key using PKEu 
