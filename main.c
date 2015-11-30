@@ -29,7 +29,6 @@ void main (int argc, char *argv[]) {
 	// Initialize memory for holding the key for enc/dec
 	initRealKey();
 
-
 	while(1) {
 		// Get the next command to run
 		scanf("%s", buffer);

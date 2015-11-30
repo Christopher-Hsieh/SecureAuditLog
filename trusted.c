@@ -17,7 +17,7 @@ char* getCertificate(char* publicKey){
 	return "random_key";
 }
 
-char* verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
+void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	FILE *tpriv;
 	tpriv = fopen("T_Priv.pem", "r");
 	RSA *tpriv_key = PEM_read_RSAPrivateKey(tpriv,NULL,NULL,NULL);
@@ -60,5 +60,5 @@ char* verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	char* E = encrypt(X);
 
 	//----------- Create M1 = IDt, PKE(K1), E(X1, SIGN(X1)) ----------- 
-	// sendResponse(IDt, PKEu, E);
+	response(IDt, PKEu, E);
 }

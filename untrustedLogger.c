@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
@@ -11,6 +12,9 @@
 
 #include "prototypes.h"
 
+// IDu - Unique ID for entity u
+int logId;
+int IDu = 101;
 char *sessionKey = NULL;
 int SIZE_OF_RSA = 16;
 
@@ -37,41 +41,33 @@ U forms the first log entry, L0:
 	D0 = d; d+; IDlog; M0
 		M0 = IDu, PKEpkt(K0), Ek0(X0, SIGNsku(X0))
 */
-void createFirstLogEntry(char* filename, char* w0, struct timeval d, 
+void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus,
 						 int IDu, char* PKEpkt, char* Ek0) {
 	FILE *fp;
 	fp = fopen(filename, "w+");
+	
+	//W0, d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0))
 
-	// Make IDlog - Unique identifier for this log
-	fputs("LOGIDENTIFIER:1\n\n", fp);
-	//fputs((const char*)getLogNumber(), fp);
+	//W0
+	fprintf(fp, "LogFileInitializationType\t");
 
-	fputs("Entry:0\n", fp);
+	//d
+	fprintf(fp, "<%ld.%06ld,", (long) d.tv_sec, (long) d.tv_usec);  
 
-	fputs("LogFileInitializationType:", fp);
-	fputs(w0, fp);
-	fputs("\n", fp);
+	//d+
+	fprintf(fp, "%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
 
-	// d or timestamp
-	// fputs("Time:", fp);
-	// fputs(d, fp);
-	// fputs("\n", fp);
+	//IDlog
+	fprintf(fp, "%d,", logId); 
 
-	// //IDu
-	// fputs("IDu:", fp);
-	// fputs(IDu, fp);
-	// fputs("\n", fp);
+	//IDu
+	fprintf(fp, "%d,", IDu);
 
-	//PKEpkt
-	fputs("PKEpkt:", fp);
-	fputs(PKEpkt, fp);
-	fputs("\n", fp);
+	//PKEpkt(K0)
+	fprintf(fp, "%s,", PKEpkt);
 
-	//Ek0
-	fputs("Ek0:", fp);
-	fputs(Ek0, fp);
-	fputs("\n", fp);
-
+	//Ek0(X0) 
+	fprintf(fp, "%s>\n", Ek0);
 
 	fclose(fp);
 
@@ -84,6 +80,9 @@ void createFirstLogEntry(char* filename, char* w0, struct timeval d,
  * file
  */
 void createLog(char fileName[]) {
+	srand(time(NULL));
+	logId = rand();
+
 	// Create new file with specified name
 
 	// Form first log entry L0
@@ -98,17 +97,10 @@ void createLog(char fileName[]) {
 			// hash(X)
 			// SHA-1
 			// Hash the authentication key Aj immediately after a log entry is written
-				
-
-	// W0 - Log file initialization type
-	char w0[] = "LogfileInitializationType";
 
 	// IDlog - Unique string identifier for this log
 	char IDlog[strlen(fileName)];
 	strcpy(IDlog, fileName);
-
-	// IDu - Unique ID for entity u
-	int IDu = 101;
 
 	// PKEpkT(K0) - public key enc. under t's public key K. Use RSA.
 		// data length
@@ -174,20 +166,11 @@ void createLog(char fileName[]) {
 
 
 	// ------------- EK0 done & created -------------
- 
-	verifyLog(IDu, pke, Ek0);
-	//createFirstLogEntry(fileName, w0, X0.d, IDu, pke, Ek0);
+
+	// verifyLog(IDu, pke, Ek0);
+	createFirstLogEntry(fileName, timeStamp, timeStamp_expire, IDu, pke, Ek0);
 }
 
-/*
-  Closing the log file involves 3 things:
-  1. Write to the log file final entry: NormalCloseMessage
-  2. Delete Af and Kf
-  3. Close the file
- */
-void closeLog(){
-	struct timeval timeStamp;
-	gettimeofday(&timeStamp,NULL);
-	
+void response(int IDt, char* PKEu, char* E){
 
 }
