@@ -157,7 +157,7 @@ char* decrypt(char* in) {
 
 char* hash(char* in){
     size_t length = sizeof(in);
-    unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
+    unsigned char* hash = malloc(SHA_DIGEST_LENGTH * (sizeof(char) + 1));
     addMemBlock(hash);
     SHA1(in, length, hash);
     return hash;
@@ -176,13 +176,13 @@ char* hashTogether(char* in_1, char* in_2){
 }
 
 char* hashTogether3(char* in_1, char* in_2, char* in_3){
-    char* out = malloc(strlen(in_1) + strlen(in_2) + strlen(in_3));
+    char* out = malloc(strlen(in_1) + strlen(in_2) + strlen(in_3) + 1);
     strcpy(out, in_1);
     strcat(out, in_2);
     strcat(out, in_3);
 
     size_t length = sizeof(out);
-    unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
+    unsigned char* hash = malloc(SHA_DIGEST_LENGTH * (sizeof(char) + 1));
     addMemBlock(hash);
     SHA1(out, length, hash);
     return hash;

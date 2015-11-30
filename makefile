@@ -7,7 +7,7 @@ run_me: main.o untrustedLogger.o trusted.o verifier.o helper.o memManager.o
 
 # Make the test file
 test: test.o untrustedLogger.o trusted.o verifier.o helper.o memManager.o
-	gcc test.o untrustedLogger.o trusted.o verifier.o helper.o memManager.o -o test -lssl -lcrypto
+	gcc -g test.o untrustedLogger.o trusted.o verifier.o helper.o memManager.o -o test -lssl -lcrypto
 
 main.o: main.c
 	gcc -g -c main.c
