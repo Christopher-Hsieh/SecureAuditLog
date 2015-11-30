@@ -25,33 +25,34 @@ char* getCertificate(unsigned char* publicKey){
 
 	
 	//cert = malloc(4096*sizeof(*cert));
-	X509 *cert;
-	EVP_PKEY *pubkey;
-	d2i_PublicKey(NULL, &pubkey, &publicKey, strlen(publicKey));
+	// X509 *cert;
+	// EVP_PKEY *pubkey;
+	// d2i_PublicKey(NULL, &pubkey, &publicKey, strlen(publicKey));
 
-	mkcert(&cert, &pubkey, 512, 0, 365);
+	// mkcert(&cert, &pubkey, 512, 0, 365);
 
-	//BIO *b64;
-	FILE *temp;
-	temp = fopen("temp", "w+");
-	PEM_write_X509(temp, cert);
+	// //BIO *b64;
+	// FILE *temp;
+	// temp = fopen("temp", "w+");
+	// PEM_write_X509(temp, cert);
 
-	fseek(temp, 0L, SEEK_END);
+	// fseek(temp, 0L, SEEK_END);
 
-	// Get the size of the file
-	int size = ftell(temp);
-	rewind(temp);
+	// // Get the size of the file
+	// int size = ftell(temp);
+	// rewind(temp);
 
-	// Now read into a buffer
-	char certbuf[4096];
+	// // Now read into a buffer
+	// char certbuf[4096];
 	
-	fread(certbuf, sizeof(char), size, temp);
-	certbuf[size+1] = '\0';
-    fclose(temp);
-	remove("temp");
+	// fread(certbuf, sizeof(char), size, temp);
+	// certbuf[size+1] = '\0';
+ //    fclose(temp);
+	// remove("temp");
 
-	free(cert);
-	return certbuf;
+	// free(cert);
+	// return certbuf;
+	return "random_key";
 }
 
 void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){

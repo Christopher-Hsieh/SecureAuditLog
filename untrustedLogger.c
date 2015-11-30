@@ -20,10 +20,10 @@ void writeAbnormalClose(char*);
 // IDu - Unique ID for entity u
 int logId;
 int IDu = 101;
-char *sessionKey = NULL;
 int SIZE_OF_RSA = 16;
 char *hashedMessage;
 char *authKey;
+char *hashChainY = "00000000000000000000";
 FILE *fp;
 char* file_name;
 
@@ -36,7 +36,7 @@ char* getUHash(){
 }
 
 void freeSessionKey() {
-	free(sessionKey);
+	// free(authKey);
 }
 
 char * fileToBuffer(FILE *fp) {
@@ -72,7 +72,24 @@ void addCloseEntry(char* finalEntry) {
 }
 
 void addMessage(char message[]){
-	printf("%s\n", message);
+	//Lj = Wj, Ek(D), Yj, Zj
+
+	//Wj
+	char* messageType = "AddMessageType";
+	
+	//Ek(D)
+	char *key = hashTogether(messageType, authKey);
+	char *Ek = malloc((strlen(message) + 1) * sizeof(*Ek));
+	addMemBlock(Ek);
+	setKey(key);
+	Ek = encrypt(message);
+	
+	//Yj
+	hashChainY = hashTogether3(hashChainY, Ek, messageType);
+
+	//Zj
+	char* HMAC = HMAC_Encrypt(hashChainY, authKey);
+	printf("%s\n", HMAC);
 }
 
 /*
@@ -127,7 +144,7 @@ void createLog(char fileName[]) {
 	char *tpub_key = fileToBuffer(tpub);
 
 	// ------------- generate random session key K0 -------------
-	sessionKey = hashTogether("LogFileInitializationType", createKey(SIZE_OF_RSA));
+	char* sessionKey = hashTogether("LogFileInitializationType", createKey(SIZE_OF_RSA));
 
 	// ------------- Encrypt using PKE --------------
 	char *pke = publicKeyEncrypt(tpub_key, sessionKey);

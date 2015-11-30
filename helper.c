@@ -174,3 +174,32 @@ char* hashTogether(char* in_1, char* in_2){
     SHA1(out, length, hash);
     return hash;
 }
+
+char* hashTogether3(char* in_1, char* in_2, char* in_3){
+    char* out = malloc(strlen(in_1) + strlen(in_2) + strlen(in_3));
+    strcpy(out, in_1);
+    strcat(out, in_2);
+    strcat(out, in_3);
+
+    size_t length = sizeof(out);
+    unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
+    addMemBlock(hash);
+    SHA1(out, length, hash);
+    return hash;
+}
+
+char* HMAC_Encrypt(char* hashChain, char* authKey){
+    unsigned char* out;
+
+    int i = 0;
+    static char res_hexstring[32];
+
+    // out = HMAC(EVP_sha256(), authKey, 4, hashChain, 28, NULL, NULL);
+    out = HMAC(EVP_md5(), authKey, strlen(authKey), hashChain, strlen(hashChain), NULL, NULL);
+    while(out[i] != '\0'){
+        sprintf(&(res_hexstring[i * 2]), "%02x", out[i]);
+        i++;
+    }
+
+    return out;
+}
