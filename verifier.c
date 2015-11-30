@@ -12,7 +12,9 @@ void getEntries(char*, char**, char**);
 
 void verifyEntryNum(int entrynum) {
 
+
 	closeLogfp();
+
 	int linecount = getNumOfLinesInFile(getFileName());
 	//printf("linecount%d\n", linecount);
 	char* entryKeys[linecount];
@@ -141,7 +143,7 @@ int getNumOfLinesInFile(char* fileName) {
 
 	char * line = NULL;
     size_t len = 0;
-    ssize_t read;
+    size_t read;
 
     int count = 0;
 	
