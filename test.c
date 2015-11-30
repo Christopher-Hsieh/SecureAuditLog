@@ -5,4 +5,6 @@
 void main (int argc, char *argv[]) {
 	initRealKey();
 	createLog("testLog");
+
+	closeLog();
  }

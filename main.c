@@ -7,21 +7,6 @@
 
 #include "prototypes.h"
 
-int LogNumber = 0;
-int currEntry = 0;
-
-int getCurrEntry() {
-	return currEntry++;
-}
-
-void incLogNum() {
-	LogNumber++;
-}
-
-int getLogNum() {
-	return LogNumber;
-}
-
 
 void main (int argc, char *argv[]) {
 	char buffer[256];
