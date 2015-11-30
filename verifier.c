@@ -12,7 +12,6 @@ void getEntries(char*, char**, char**);
 
 void verifyEntryNum(int entrynum) {
 
-
 	int linecount = getNumOfLinesInFile(getFileName());
 	char* entryKeys[linecount];
 	char* entryData[linecount];
@@ -126,7 +125,7 @@ int getNumOfLinesInFile(char* fileName) {
 
 	char * line = NULL;
     size_t len = 0;
-    ssize_t read;
+    size_t read;
 
     int count = 0;
 	
