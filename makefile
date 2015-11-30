@@ -29,7 +29,7 @@ memManager.o: memManager.c
 
 # Clean everything
 clean: 
-	rm -f testLog *.o run_me test
+	rm -f testLog *.o run_me test mylog
 
 # Clean the tests
 cleantest:

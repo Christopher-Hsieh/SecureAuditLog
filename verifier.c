@@ -11,14 +11,19 @@
 void getEntries(char*, char**, char**);
 
 void verifyEntryNum(int entrynum) {
+
 	int linecount = getNumOfLinesInFile(getFileName());
 	char* entryKeys[linecount];
 	char* entryData[linecount];
 	getEntryKeys_Verifier(entryData, entryKeys);
 
-	if (entryKeys == NULL) {
+	if (entryKeys == NULL || linecount < entrynum) {
 		printf("Failed Verification\n");
+		return;
 	}
+	setKey(entryKeys[entrynum]);
+	printf("%s\n", decrypt(entryData[entrynum]));
+
 };
 
 void verifyAll(char* logFile, char* outFile) {
@@ -31,18 +36,10 @@ void verifyAll(char* logFile, char* outFile) {
 
 	if (entryKeys == NULL) {
 		printf("Failed Verification\n");
+		return;
 	}
-	else {
-		// Do something with the keys
+		printf("You wanna verify this but you cant yet\n");
 
-		// int i = 0;
-		// for(; i < linecount; i++) {
-		// 	if(entryKeys[i] == NULL) {
-		// 		break;
-		// 	} 
-		// 	printf("%s\n", entryKeys[i]);
-		// }
-	}
 
 }
 
@@ -106,9 +103,8 @@ void getEntries(char* fileName, char** entries, char **entryData) {
 
 		strtok_r(s, "\t", &strtok_ctx);
 
-		strtok_r(NULL, "||", &strtok_ctx);
-		strtok_r(NULL, "||", &strtok_ctx);
-		strtok_r(NULL, "||", &strtok_ctx);
+		strtok_r(NULL, "||", &strtok_ctx); //Yj
+		strtok_r(NULL, "||", &strtok_ctx); //Zj
 
 		char* data = strtok_r(NULL, "||", &strtok_ctx);
 

@@ -10,6 +10,7 @@
 
 void main (int argc, char *argv[]) {
 	char buffer[256];
+	int intbuf[10];
 
 	// Initialize memory for holding the key for enc/dec
 	initRealKey();
@@ -37,9 +38,8 @@ void main (int argc, char *argv[]) {
 
 		// Verify entry_no cmd
 		else if (strncmp(buffer, "verify", 6) == 0) {
-			int *line_no;
-			scanf("%i", line_no);
-			//verifyEntryNum(line_no);
+			scanf("%s", buffer);
+			verifyEntryNum((int)buffer);
 		}
 
 		// Verify all cmd

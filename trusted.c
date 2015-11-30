@@ -181,8 +181,6 @@ void getEntryKeys_Trusted(char** entries, char** keys, int line_count) {
 	char* Yj = strtok_r(NULL, "||", &strtok_ctx);
 	if (Yj == NULL) {return NULL;}
 
-	strtok_r(NULL, "||", &strtok_ctx);
-
 	char* Zj = strtok_r(NULL, "||", &strtok_ctx);
 	if (Zj == NULL) {return NULL;}
 
@@ -199,7 +197,10 @@ void getEntryKeys_Trusted(char** entries, char** keys, int line_count) {
 
 	// HMACaf = ...
 	// TODO compare HMACaf instad
-	if(strcmp(Zj, Af) != 0) {//Not a match
+	//Zj
+	char* HMAC = HMAC_Encrypt(Yj, Af);
+	if(strcmp(Zj, HMAC) != 0) {//Not a match
+		printf("Zj & HMAC did not match\n");
 		return NULL;
 	}
 

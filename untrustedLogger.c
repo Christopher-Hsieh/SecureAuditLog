@@ -64,6 +64,7 @@ char* getFileName() {
 	return file_name;
 }
 
+
 void closeLogfp() {
 	fclose(fp);
 }
@@ -90,6 +91,8 @@ void addMessage(char message[]){
 
 	//Zj
 	char* HMAC = HMAC_Encrypt(hashChainY, authKey);
+
+	authKey = hash(authKey);
 	
 	writeMessage(messageType, Ek, hashChainY, HMAC);
 }
@@ -239,7 +242,7 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
     3. Close the file 
  */
 void closeLog() {
-   freeMem();
+   	//freeMem();
     // 1. Add close entry. EntryCode: NormalCloseMessage; Timestamp
     /* 
         Below code to get the time copied from:
@@ -257,7 +260,7 @@ void closeLog() {
 
     char* finalEntry = malloc((25+strlen(tmbuf))*sizeof(finalEntry));
 
-    strcpy(finalEntry, "NormalCloseMessage\t||as||dfa||sdfgsdf||sa");
+    strcpy(finalEntry, "NormalCloseMessage\t||");
     strcat(finalEntry, tmbuf);
 
     //printf("%s\n", finalEntry);
