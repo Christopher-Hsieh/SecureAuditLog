@@ -16,6 +16,8 @@ char* hashTogether(char*, char*);
 void response(int, char*, char*);
 char* getLogName(void);
 void addMessage(char[]);
+char* hashTogether3(char*, char*, char*);
+char* HMAC_Encrypt(char*, char*);
 
 /* main.c */
 int getLogId(void);

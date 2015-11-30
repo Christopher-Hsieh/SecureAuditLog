@@ -16,14 +16,15 @@
 void writeResponse(int, char*, char*);
 void createFirstLogEntry(struct timeval, struct timeval, int, char*, char*);
 void writeAbnormalClose(char*);
+void writeMessage(char*, char*, char*, char*);
 
 // IDu - Unique ID for entity u
 int logId;
 int IDu = 101;
-char *sessionKey = NULL;
 int SIZE_OF_RSA = 16;
 char *hashedMessage;
 char *authKey;
+char *hashChainY = "00000000000000000000";
 FILE *fp;
 char* file_name;
 
@@ -36,7 +37,7 @@ char* getUHash(){
 }
 
 void freeSessionKey() {
-	free(sessionKey);
+	// free(authKey);
 }
 
 char * fileToBuffer(FILE *fp) {
@@ -72,7 +73,25 @@ void addCloseEntry(char* finalEntry) {
 }
 
 void addMessage(char message[]){
-	printf("%s\n", message);
+	//Lj = Wj, Ek(D), Yj, Zj
+
+	//Wj
+	char* messageType = "AddMessageType";
+	
+	//Ek(D)
+	char *key = hashTogether(messageType, authKey);
+	char *Ek = malloc((strlen(message) + 1) * sizeof(*Ek));
+	addMemBlock(Ek);
+	setKey(key);
+	Ek = encrypt(message);
+	
+	//Yj
+	hashChainY = hashTogether3(hashChainY, Ek, messageType);
+
+	//Zj
+	char* HMAC = HMAC_Encrypt(hashChainY, authKey);
+	
+	writeMessage(messageType, Ek, hashChainY, HMAC);
 }
 
 /*
@@ -127,7 +146,7 @@ void createLog(char fileName[]) {
 	char *tpub_key = fileToBuffer(tpub);
 
 	// ------------- generate random session key K0 -------------
-	sessionKey = hashTogether("LogFileInitializationType", createKey(SIZE_OF_RSA));
+	char* sessionKey = hashTogether("LogFileInitializationType", createKey(SIZE_OF_RSA));
 
 	// ------------- Encrypt using PKE --------------
 	char *pke = publicKeyEncrypt(tpub_key, sessionKey);
@@ -271,17 +290,17 @@ void createFirstLogEntry(struct timeval d, struct timeval d_plus,
 	//W0
 	fprintf(fp, "LogFileInitializationType\t");
 	//d
-	fprintf(fp, "<%ld.%06ld,", (long) d.tv_sec, (long) d.tv_usec);  
+	fprintf(fp, "%ld.%06ld||", (long) d.tv_sec, (long) d.tv_usec);  
 	//d+
-	fprintf(fp, "%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
+	fprintf(fp, "%ld.%06ld||", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
 	//IDlog
-	fprintf(fp, "%d,", logId); 
+	fprintf(fp, "%d||", logId); 
 	//IDu
-	fprintf(fp, "%d,", IDu);
+	fprintf(fp, "%d||", IDu);
 	//PKEpkt(K0)
-	fprintf(fp, "%s,", PKEpkt);
+	fprintf(fp, "%s||", PKEpkt);
 	//Ek0(X0) 
-	fprintf(fp, "%s>\n", Ek0);
+	fprintf(fp, "%s\n", Ek0);
 
 }
 
@@ -291,11 +310,11 @@ void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
 	//Wj
 	fprintf(fp, "ResponseMessageType\t");
 	//IDu
-	fprintf(fp, "<%d,", IDt);
+	fprintf(fp, "%d||", IDt);
 	//PKEpkt(K)
-	fprintf(fp, "%s,", PKEsessionKey);
+	fprintf(fp, "%s||", PKEsessionKey);
 	//Ek(X) 
-	fprintf(fp, "%s>\n", encryptedLog);
+	fprintf(fp, "%s\n", encryptedLog);
 }
 
 void writeAbnormalClose(char* reason){
@@ -311,4 +330,17 @@ void writeAbnormalClose(char* reason){
 
 	//Reason
 	fprintf(fp, "%s>\n", reason);
+}
+
+void writeMessage(char* Wj, char* Ek, char* Yj, char* Zj){
+	//Wj, Ek(D), Yj, Zj
+
+	//Wj
+	fprintf(fp, "%s\t", Wj);
+	//Yj
+	fprintf(fp, "%s||", Yj);
+	//Zj
+	fprintf(fp, "%s||", Zj);
+	//Ek
+	fprintf(fp, "%s\n,", Ek);
 }
