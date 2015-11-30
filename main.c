@@ -21,7 +21,6 @@ int getLogNum() {
 void main (int argc, char *argv[]) {
 	char buffer[256];
 
-
 	while(1) {
 		// Get the next command to run
 		scanf("%s", buffer);
