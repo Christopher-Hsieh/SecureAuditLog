@@ -185,4 +185,9 @@ void createLog(char fileName[]) {
   2. Delete Af and Kf
   3. Close the file
  */
-void closeLog(){}
+void closeLog(){
+	struct timeval timeStamp;
+	gettimeofday(&timeStamp,NULL);
+	
+
+}
