@@ -15,6 +15,7 @@
 //Prototypes for untrusted only
 void writeResponse(int, char*, char*);
 void createFirstLogEntry(struct timeval, struct timeval, int, char*, char*);
+void writeAbnormalClose(char*);
 
 // IDu - Unique ID for entity u
 int logId;
@@ -141,7 +142,7 @@ void createLog(char fileName[]) {
 	char *certificate = getCertificate(upub_key); //this call currently just returns static string
 
 	// ------------- generate authentication key A0 -------------
-	authKey = createKey(SIZE_OF_RSA);
+	authKey = hash(createKey(SIZE_OF_RSA));
 
 	// ------------- ignore protocol step identifier p (according to TA) -------------
 
@@ -191,7 +192,9 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
 	char IDlog_string[15];
 	sprintf(IDlog_string, "%d", logId);
 	if (strstr(logfile, IDlog_string) == NULL || strstr(logfile, hashedMessage) == NULL) {
-   		fprintf(stderr, "X1 values do not match!\n");
+		char* error = "X1 values do not match";
+   		fprintf(stderr, "%s\n", error);
+   		writeAbnormalClose(error);
    		return;
 	} else {
 		//CALLED WHEN VALUES ARE VALID
@@ -200,50 +203,9 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
 		//remove old hashed X0 value
 		hashedMessage = NULL;
 
-		//calculate new authentication value for A
-		authKey = createKey(SIZE_OF_RSA);
+		//hash old authKey
+		authKey = hash(authKey);
 	}
-}
-
-/*
-U forms the first log entry, L0:
-	W0 = LogFileInitializationType
-	D0 = d; d+; IDlog; M0
-		M0 = IDu, PKEpkt(K0), Ek0(X0, SIGNsku(X0))
-*/
-void createFirstLogEntry(struct timeval d, struct timeval d_plus,
-						 int IDu, char* PKEpkt, char* Ek0) {
-	fp = fopen(file_name, "w+");
-
-	//W0, d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0))
-	//W0
-	fprintf(fp, "LogFileInitializationType\t");
-	//d
-	fprintf(fp, "<%ld.%06ld,", (long) d.tv_sec, (long) d.tv_usec);  
-	//d+
-	fprintf(fp, "%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
-	//IDlog
-	fprintf(fp, "%d,", logId); 
-	//IDu
-	fprintf(fp, "%d,", IDu);
-	//PKEpkt(K0)
-	fprintf(fp, "%s,", PKEpkt);
-	//Ek0(X0) 
-	fprintf(fp, "%s>\n", Ek0);
-
-}
-
-void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
-	//Wj		< IDt, PKEpku(K), Ek(X) >
-
-	//W0
-	fprintf(fp, "ResponseMessageType\t");
-	//IDu
-	fprintf(fp, "<%d,", IDt);
-	//PKEpkt(K)
-	fprintf(fp, "%s,", PKEsessionKey);
-	//Ek(X) 
-	fprintf(fp, "%s>\n", encryptedLog);
 }
 
 /*  Three things to do here:
@@ -272,7 +234,7 @@ void closeLog() {
    
     char finalEntry[256+strlen(tmbuf)];
 
-    strcat(finalEntry, "NormalCloseMessage\t");
+    strcat(finalEntry, "NormalCloseMessage,");
     strcat(finalEntry, tmbuf);
 
     //printf("%s\n", finalEntry);
@@ -287,4 +249,61 @@ void closeLog() {
 
     // 3. Close the file 
     closeLogfp();
+}
+
+/*
+U forms the first log entry, L0:
+	W0 = LogFileInitializationType
+	D0 = d; d+; IDlog; M0
+		M0 = IDu, PKEpkt(K0), Ek0(X0, SIGNsku(X0))
+*/
+void createFirstLogEntry(struct timeval d, struct timeval d_plus,
+						 int IDu, char* PKEpkt, char* Ek0) {
+	fp = fopen(file_name, "w+");
+
+	//W0		< d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0)) >
+
+	//W0
+	fprintf(fp, "LogFileInitializationType\t");
+	//d
+	fprintf(fp, "<%ld.%06ld,", (long) d.tv_sec, (long) d.tv_usec);  
+	//d+
+	fprintf(fp, "%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
+	//IDlog
+	fprintf(fp, "%d,", logId); 
+	//IDu
+	fprintf(fp, "%d,", IDu);
+	//PKEpkt(K0)
+	fprintf(fp, "%s,", PKEpkt);
+	//Ek0(X0) 
+	fprintf(fp, "%s>\n", Ek0);
+
+}
+
+void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
+	//Wj		< IDt, PKEpku(K), Ek(X) >
+
+	//Wj
+	fprintf(fp, "ResponseMessageType\t");
+	//IDu
+	fprintf(fp, "<%d,", IDt);
+	//PKEpkt(K)
+	fprintf(fp, "%s,", PKEsessionKey);
+	//Ek(X) 
+	fprintf(fp, "%s>\n", encryptedLog);
+}
+
+void writeAbnormalClose(char* reason){
+	//Wj		< timestamp, reason >
+
+	//Wj
+	fprintf(fp, "AbnormalCloseType\t");
+
+	//Current timestamp (d)
+	struct timeval timeStamp;
+	gettimeofday(&timeStamp,NULL);
+	fprintf(fp, "<%ld.%06ld,", (long) timeStamp.tv_sec, (long) timeStamp.tv_usec);  
+
+	//Reason
+	fprintf(fp, "%s>\n", reason);
 }
