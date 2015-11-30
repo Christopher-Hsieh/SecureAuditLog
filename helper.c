@@ -127,9 +127,8 @@ char* decrypt(char* in) {
 
 char* hash(char* in){
     size_t length = sizeof(in);
-
-    unsigned char hash[SHA_DIGEST_LENGTH];
-    return SHA1(in, length, hash);
+    unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
+    return hash;
 }
 
 void closeLog() {

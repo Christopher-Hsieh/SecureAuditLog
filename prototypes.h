@@ -17,5 +17,7 @@ char* getLogName(void);
 int getLogId(void);
 void initRealKey();
 void setKey(char*);
+char* getUHash(void);
+int getLogId(void);
 
 #endif
