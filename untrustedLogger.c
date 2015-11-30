@@ -55,7 +55,7 @@ void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus
 	fprintf(fp, "<%ld.%06ld,", (long) d.tv_sec, (long) d.tv_usec);  
 
 	//d+
-	fprintf(fp, "<%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
+	fprintf(fp, "%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
 
 	//IDlog
 	fprintf(fp, "%d,", logId); 
