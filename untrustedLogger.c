@@ -291,17 +291,17 @@ void createFirstLogEntry(struct timeval d, struct timeval d_plus,
 	//W0
 	fprintf(fp, "LogFileInitializationType\t");
 	//d
-	fprintf(fp, "<%ld.%06ld,", (long) d.tv_sec, (long) d.tv_usec);  
+	fprintf(fp, "%ld.%06ld||", (long) d.tv_sec, (long) d.tv_usec);  
 	//d+
-	fprintf(fp, "%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
+	fprintf(fp, "%ld.%06ld||", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
 	//IDlog
-	fprintf(fp, "%d,", logId); 
+	fprintf(fp, "%d||", logId); 
 	//IDu
-	fprintf(fp, "%d,", IDu);
+	fprintf(fp, "%d||", IDu);
 	//PKEpkt(K0)
-	fprintf(fp, "%s,", PKEpkt);
+	fprintf(fp, "%s||", PKEpkt);
 	//Ek0(X0) 
-	fprintf(fp, "%s>\n", Ek0);
+	fprintf(fp, "%s\n", Ek0);
 
 }
 
@@ -311,11 +311,11 @@ void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
 	//Wj
 	fprintf(fp, "ResponseMessageType\t");
 	//IDu
-	fprintf(fp, "<%d,", IDt);
+	fprintf(fp, "%d||", IDt);
 	//PKEpkt(K)
-	fprintf(fp, "%s,", PKEsessionKey);
+	fprintf(fp, "%s||", PKEsessionKey);
 	//Ek(X) 
-	fprintf(fp, "%s>\n", encryptedLog);
+	fprintf(fp, "%s\n", encryptedLog);
 }
 
 void writeAbnormalClose(char* reason){
@@ -338,10 +338,10 @@ void writeMessage(char* Wj, char* Ek, char* Yj, char* Zj){
 
 	//Wj
 	fprintf(fp, "%s\t", Wj);
-	//Ek
-	fprintf(fp, "<%s,", Ek);
 	//Yj
-	fprintf(fp, "%s,", Yj);
+	fprintf(fp, "%s||", Yj);
 	//Zj
-	fprintf(fp, "%s>\n", Zj);
+	fprintf(fp, "%s||", Zj);
+	//Ek
+	fprintf(fp, "%s\n,", Ek);
 }

@@ -68,7 +68,8 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	char* logfile = decrypt(encryptedLog);
 
 	//----------- Verify X0 is correct ----------- 
-	char* hashedLogfile = hash(logfile);
+	char* hashedLogfile = 0;
+	hashedLogfile = hash(logfile);
 	//printf("%s\n", hashedLogfile);
 	if(strcmp(hashedLogfile, getUHash())){
 		fprintf(stderr, "X0 values do not match!\n");
