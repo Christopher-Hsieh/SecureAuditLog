@@ -18,6 +18,13 @@
 
 int IDt = 111;
 int SIZE_OF_KEY = 16;
+int certLen;
+
+char* A0;
+
+void setCertLen(int len){
+	certLen = len;
+}
 
 int mkcert(X509 **, EVP_PKEY **, int , int , int );
 
@@ -25,33 +32,43 @@ char* getCertificate(unsigned char* publicKey){
 
 	
 	//cert = malloc(4096*sizeof(*cert));
-	X509 *cert;
-	EVP_PKEY *pubkey;
-	d2i_PublicKey(NULL, &pubkey, &publicKey, strlen(publicKey));
+	// X509 *cert;
+	// EVP_PKEY *pubkey;
+	// d2i_PublicKey(NULL, &pubkey, &publicKey, strlen(publicKey));
 
-	mkcert(&cert, &pubkey, 512, 0, 365);
+	// mkcert(&cert, &pubkey, 512, 0, 365);
 
-	//BIO *b64;
-	FILE *temp;
-	temp = fopen("temp", "w+");
-	PEM_write_X509(temp, cert);
+	// //BIO *b64;
+	// FILE *temp;
+	// temp = fopen("temp", "w+");
+	// PEM_write_X509(temp, cert);
 
-	fseek(temp, 0L, SEEK_END);
+	// fseek(temp, 0L, SEEK_END);
 
-	// Get the size of the file
-	int size = ftell(temp);
-	rewind(temp);
+	// // Get the size of the file
+	// int size = ftell(temp);
+	// rewind(temp);
 
-	// Now read into a buffer
-	char certbuf[4096];
+	// // Now read into a buffer
+	// char certbuf[4096];
 	
-	fread(certbuf, sizeof(char), size, temp);
-	certbuf[size+1] = '\0';
-    fclose(temp);
-	remove("temp");
+	// fread(certbuf, sizeof(char), size, temp);
+	// certbuf[size+1] = '\0';
+ //    fclose(temp);
+	// remove("temp");
 
-	free(cert);
-	return certbuf;
+	// free(cert);
+	//return certbuf;
+	//certLen = strlen(certbuf);
+	
+	certLen = strlen("random_key");
+	return "random_key";
+}
+
+void setA0(char* logfile) {
+	int size = strlen(logfile) - certLen;
+	A0 = malloc((size+1)*sizeof(*A0));
+	strcpy(A0, &logfile[certLen]);
 }
 
 void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
@@ -65,7 +82,7 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Decrypt encryptedLog using session key ----------- 
 	char* logfile = decrypt(encryptedLog);
-
+	setA0(logfile);
 	//----------- Verify X0 is correct ----------- 
 	char* hashedLogfile = hash(logfile);
 	//printf("%s\n", hashedLogfile);
@@ -105,9 +122,6 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	response(IDt, PKEu, E);
 }
 
-void getEntryKeys_Trusted(char** entries, char** keys, int line_count) {
-
-}
 
 int mkcert(X509 **x509p, EVP_PKEY **pkeyp, int bits, int serial, int days) {
 	X509 *x;
@@ -152,4 +166,51 @@ int mkcert(X509 **x509p, EVP_PKEY **pkeyp, int bits, int serial, int days) {
 
 	*x509p=x;
 	*pkeyp=pk;
+}
+
+
+
+void getEntryKeys_Trusted(char** entries, char** keys, int line_count) {
+	// Get Wj
+	char *strtok_ctx;
+	char *s = strdup(entries[line_count-1]);
+
+	char* Wj = strtok_r(s, "\t", &strtok_ctx);
+	printf("%s\n", Wj);
+
+	char* Yj = strtok_r(NULL, "||", &strtok_ctx);
+	if (Yj == NULL) {return NULL;}
+
+	strtok_r(NULL, "||", &strtok_ctx);
+
+	char* Zj = strtok_r(NULL, "||", &strtok_ctx);
+	if (Zj == NULL) {return NULL;}
+
+	//printf("%s\n", Yj);
+	//printf("%s\n", Zj);
+
+	// Calculate Af
+	int i;
+	char* Af;
+	strcpy(Af, A0);
+	for (i = 0; i < line_count; i++) {
+		Af = hash(Af);
+	}
+
+	// HMACaf = ...
+	// TODO compare HMACaf instad
+	if(strcmp(Zj, Af) != 0) {//Not a match
+		return NULL;
+	}
+
+	// Didn't exit, get all the keys.
+	char* Aj;
+	strcpy(Aj, A0);
+	for (i = 0; i < line_count; i++) {
+		char* Kj = hashTogether(Wj, Aj);
+		Aj = hash(Aj);
+
+		keys[i] = malloc((strlen(Kj) + 1)*sizeof(keys[i]));
+		strcpy(keys[i], Kj);
+	}
 }

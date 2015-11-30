@@ -146,6 +146,7 @@ void createLog(char fileName[]) {
 
 	// ------------- generate authentication key A0 -------------
 	authKey = hash(createKey(SIZE_OF_RSA));
+	//printf("AUTHKEY: %s\n", authKey);
 
 	// ------------- ignore protocol step identifier p (according to TA) -------------
 
@@ -162,8 +163,6 @@ void createLog(char fileName[]) {
 	addMemBlock(message);
 	strcpy(message, certificate);
 	strcat(message, authKey);
-
-	printf("authKey: %s\n", authKey);
 
 	// ------------- Turn K0 into BF key for symmetric enc -------------
 	char *Ek0 = malloc((strlen(message) + 1) * sizeof(*Ek0));
@@ -239,7 +238,7 @@ void closeLog() {
 
     char* finalEntry = malloc((25+strlen(tmbuf))*sizeof(finalEntry));
 
-    strcpy(finalEntry, "NormalCloseMessage\t");
+    strcpy(finalEntry, "NormalCloseMessage\t||as||dfa||sdfgsdf||sa");
     strcat(finalEntry, tmbuf);
 
     //printf("%s\n", finalEntry);

@@ -7,12 +7,43 @@
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
 
-// Prototypes for verifier only
-void getEntries(char*, char**);
+// Prototype for verifier only
+void getEntries(char*, char**, char**);
+
+void verifyEntryNum(int entrynum) {
+	int linecount = getNumOfLinesInFile(getFileName());
+	char* entryKeys[linecount];
+	char* entryData[linecount];
+	getEntryKeys_Verifier(entryData, entryKeys);
+
+	if (entryKeys == NULL) {
+		printf("Failed Verification\n");
+	}
+};
 
 void verifyAll(char* logFile, char* outFile) {
-	FILE *fp;
-	fp = fopen(logFile, "r");
+	setFileName(logFile);
+
+	int linecount = getNumOfLinesInFile(logFile);
+	char* entryKeys[linecount];
+	char* entryData[linecount];
+	getEntryKeys_Verifier(entryData, entryKeys);
+
+	if (entryKeys == NULL) {
+		printf("Failed Verification\n");
+	}
+	else {
+		// Do something with the keys
+
+		// int i = 0;
+		// for(; i < linecount; i++) {
+		// 	if(entryKeys[i] == NULL) {
+		// 		break;
+		// 	} 
+		// 	printf("%s\n", entryKeys[i]);
+		// }
+	}
+
 }
 
 /*
@@ -20,7 +51,7 @@ void verifyAll(char* logFile, char* outFile) {
 	Send this list to T, which returns a list of keys.
 	If T returns NULL, it failed.
  */
-void getEntryKeys_Verifier(int line_num, char** entryKeys) {
+void getEntryKeys_Verifier(char** entryData, char** entryKeys) {
 
 	/*
 	 Types of messages to verify
@@ -35,11 +66,10 @@ void getEntryKeys_Verifier(int line_num, char** entryKeys) {
 	int line_count = getNumOfLinesInFile(getFileName());
 	char* entries[line_count];
 	
-	getEntries(getFileName(), &entries);
+	getEntries(getFileName(), &entries, &entryData);
 
 	// Recieve Keys, from T, for each entry
-	// getEntryKeys_Trusted(&entries, &entryKeys, line_count);
-	// TODO: Do something with the entry KEys
+	getEntryKeys_Trusted(&entries, &entryKeys, line_count);
 }
 
 
@@ -47,7 +77,7 @@ void getEntryKeys_Verifier(int line_num, char** entryKeys) {
  * Get an array of pointers.
  * Each index is a line corresponding to an entry in the log.
  */
-void getEntries(char* fileName, char** entries) {
+void getEntries(char* fileName, char** entries, char **entryData) {
 	int line_count = getNumOfLinesInFile(fileName);
 
 	//char* entries[line_count];// = (char **)malloc((getLengthOfFile(fileName)+16)*sizeof(char*));
@@ -63,10 +93,30 @@ void getEntries(char* fileName, char** entries) {
     int index = 0;
 
     // Read file line by line into our array
+
+
     while ((read = getline(&line, &len, fp)) != -1) {
     	entries[index] = malloc((strlen(line)+1)*sizeof(entries[index]));
 		strcpy(entries[index], line);
-		//printf("%s\n", entries[index]);
+
+    	entryData[index] = malloc((strlen(line)+1)*sizeof(entryData[index]));
+
+		char *strtok_ctx;
+		char *s = strdup(line);
+
+		strtok_r(s, "\t", &strtok_ctx);
+
+		strtok_r(NULL, "||", &strtok_ctx);
+		strtok_r(NULL, "||", &strtok_ctx);
+		strtok_r(NULL, "||", &strtok_ctx);
+
+		char* data = strtok_r(NULL, "||", &strtok_ctx);
+
+		if (data != NULL) {
+			strcpy(entryData[index], data);
+		}
+
+
 		index++;
     }
 
@@ -113,5 +163,6 @@ void verifyTest() {
 	//getEntries(getFileName());
 	//verifyEntryNum(2);
 	char* entries[10];
-	getEntryKeys_Verifier(1, entries);
+	//getEntryKeys_Verifier(entries);
+	verifyAll("testLog", "outFile");
 }
