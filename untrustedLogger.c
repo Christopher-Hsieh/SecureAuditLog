@@ -159,6 +159,8 @@ void createLog(char fileName[]) {
 	strcpy(message, certificate);
 	strcat(message, authKey);
 
+	printf("authKey: %s\n", authKey);
+
 	// ------------- Turn K0 into BF key for symmetric enc -------------
 	char *Ek0 = malloc((strlen(message) + 1) * sizeof(*Ek0));
 	setKey(sessionKey);

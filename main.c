@@ -38,7 +38,7 @@ void main (int argc, char *argv[]) {
 		else if (strncmp(buffer, "verify", 6) == 0) {
 			int *line_no;
 			scanf("%i", line_no);
-			verifyEntryNum(line_no);
+			//verifyEntryNum(line_no);
 		}
 
 		// Verify all cmd

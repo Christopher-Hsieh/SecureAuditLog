@@ -10,50 +10,17 @@
 // Prototypes for verifier only
 void getEntries(char*, char**);
 
-
-void verifyEntryNum(int line_num) {
-	// Scan until we find line_num
-	int currLineNo = 0;
-
-	// char* filename = malloc((strlen(getFileName())+1)*sizeof(filename)); 
-	// file= getFileName();
-
-	FILE *fp;
-	fp = fopen(getFileName(), "r");
-
-	char * line = NULL;
-    size_t len = 0;
-    ssize_t read;
-	
-	while ((read = getline(&line, &len, fp)) != -1) {
-		if (currLineNo == line_num) break;
-		//printf("Retrieved line of length %zu :\n", read);
-		//printf("Line Num:%i, %s\n", currLineNo, line);
-
-		currLineNo++;
-    }
-
-    // File ended before we found the entry print error
-    if (currLineNo != line_num) {
-    	//printf("Failed Verification\n");
-    }
-    // Else we process the line we hit
-    else {
-    	//TODO
-    	//printf("Found our line: %s\n", line);
-    }
-
-    fclose(fp);
-}
-
 void verifyAll(char* logFile, char* outFile) {
 	FILE *fp;
 	fp = fopen(logFile, "r");
 }
 
-// Takes in a line to verify
-// Returns: NULL for failure or The decrypted message
-char* verifyLine(char* line) {
+/*
+	Read file into array of strings, each index is a line.
+	Send this list to T, which returns a list of keys.
+	If T returns NULL, it failed.
+ */
+void getEntryKeys_Verifier(int line_num, char** entryKeys) {
 
 	/*
 	 Types of messages to verify
@@ -70,14 +37,9 @@ char* verifyLine(char* line) {
 	
 	getEntries(getFileName(), &entries);
 
-	int i = 0;
-	while(1) {
-		printf("%s\n", entries[i++]);
-		if (i >= line_count) break;
-	}
-
-	// Recieve Decryption key for that record
-	return NULL;
+	// Recieve Keys, from T, for each entry
+	getEntryKeys_Trusted(&entries, &entryKeys, line_count);
+	// TODO: Do something with the entry KEys
 }
 
 
@@ -149,5 +111,7 @@ int getLengthOfFile(char* fileName){
 void verifyTest() {
 	//printf("%i\n", getNumOfLinesInFile(getFileName()));
 	//getEntries(getFileName());
-	verifyLine(2);
+	//verifyEntryNum(2);
+	char* entries[10];
+	getEntryKeys_Verifier(1, entries);
 }

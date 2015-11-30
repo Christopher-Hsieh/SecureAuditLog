@@ -28,7 +28,7 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Decrypt encryptedLog using session key ----------- 
 	char* logfile = decrypt(encryptedLog);
-	// printf("%s\n", logfile);
+	printf("LogFile: %s\n", logfile);
 
 	//----------- Verify X0 is correct ----------- 
 	char* hashedLogfile = hash(logfile);
@@ -61,4 +61,8 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Create M1 = IDt, PKE(K1), E(X1, SIGN(X1)) ----------- 
 	response(IDt, PKEu, E);
+}
+
+void getEntryKeys_Trusted(char** entries, char** keys, int line_count){
+
 }
