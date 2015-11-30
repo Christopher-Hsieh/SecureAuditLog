@@ -26,7 +26,8 @@ void main (int argc, char *argv[]) {
 
 		// Add log message cmd
 		else if (strncmp(buffer, "add", 3) == 0) {
-			//TODO
+			scanf("%s", buffer);
+			addMessage(buffer);
 		}
 
 		// Close log cmd

@@ -78,8 +78,10 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Create X1 = IDlog, hash(X0) ----------- 
 	char *IDlog_string = malloc(15 * sizeof(char));
+	addMemBlock(IDlog_string);
 	sprintf(IDlog_string, "%d", getLogId());
 	char* X = malloc((strlen(IDlog_string) + strlen(hashedLogfile)) * sizeof(char));
+	addMemBlock(X);
 	strcpy(X, IDlog_string);
 	strcat(X, hashedLogfile);
 
@@ -96,6 +98,7 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	//encrypt X using session key
 	setKey(sessionKey);
 	char* E = malloc((strlen(X) + 1) * sizeof(char));
+	addMemBlock(E);
 	E = encrypt(X);
 
 	//----------- Create M1 = IDt, PKE(K1), E(X1, SIGN(X1)) ----------- 
