@@ -216,7 +216,6 @@ void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus
 						 int IDu, char* PKEpkt, char* Ek0) {
 	
 	//W0, d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0))
-
 	//W0
 	fprintf(fp, "LogFileInitializationType\t");
 	//d
@@ -236,7 +235,7 @@ void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus
 
 void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
 	//Wj		< IDt, PKEpku(K), Ek(X) >
-
+	printf("Hello\n");
 	//W0
 	fprintf(fp, "ResponseMessageType\t");
 	//IDu
@@ -245,4 +244,47 @@ void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
 	fprintf(fp, "%s,", PKEsessionKey);
 	//Ek(X) 
 	fprintf(fp, "%s>\n", encryptedLog);
+}
+
+/*  Three things to do here:
+    1. Add close entry. EntryCode: NormalCloseMessage; Timestamp
+    2. Delete all data (Af, Kf)
+    3. Close the file 
+ */
+void closeLog() {
+    // 1. Add close entry. EntryCode: NormalCloseMessage; Timestamp
+    /* 
+        Below code to get the time copied from:
+        http://stackoverflow.com/questions/2408976/struct-timeval-to-printable-format
+     */
+    struct timeval tv;
+    time_t nowtime;
+    struct tm *nowtm;
+    char tmbuf[64], buf[64];
+
+    gettimeofday(&tv, NULL);
+    nowtime = tv.tv_sec;
+    nowtm = localtime(&nowtime);
+    strftime(tmbuf, sizeof(tmbuf), "%Y-%m-%d %H:%M:%S", nowtm);
+
+    //tmbuf
+    //char* finalEntry = malloc((19+strlen(tmbuf))*sizeof(finalEntry));
+   
+    char finalEntry[256+strlen(tmbuf)];
+
+    strcat(finalEntry, "NormalCloseMessage,");
+    strcat(finalEntry, tmbuf);
+
+    //printf("%s\n", finalEntry);
+    addCloseEntry(finalEntry);
+
+    // 2. Delete all data (Af, Kf)
+    freeRealKey();
+
+    freeSessionKey();
+
+    //resetLogAndEntry();
+
+    // 3. Close the file 
+    closeLogfp();
 }

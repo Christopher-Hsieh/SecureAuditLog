@@ -12,6 +12,7 @@
 
 int LogNumber = 0;
 int currEntry = 0;
+char* realKey = NULL;
 
 
 int getCurrEntry() {
@@ -92,8 +93,6 @@ char* publicKeyDecrypt(RSA* priv_key, char* encrypted){
     return decrypted;
 }
 
-char* realKey = NULL;
-
 void initRealKey() {
     realKey = malloc(256*sizeof(realKey));
     memset(realKey, 0, 256*sizeof(realKey) - 1); 
@@ -101,6 +100,10 @@ void initRealKey() {
 
 void setKey(char* str) {
     memcpy(realKey, str, sizeof(str));
+}
+
+void freeRealKey() {
+    free(realKey);
 }
 
 
@@ -146,48 +149,4 @@ char* hash(char* in){
     unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
     SHA1(in, length, hash);
     return hash;
-}
-
-/*  Three things to do here:
-    1. Add close entry. EntryCode: NormalCloseMessage; Timestamp
-    2. Delete all data (Af, Kf)
-    3. Close the file 
- */
-void closeLog() {
-    // 1. Add close entry. EntryCode: NormalCloseMessage; Timestamp
-    /* 
-        Below code to get the time copied from:
-        http://stackoverflow.com/questions/2408976/struct-timeval-to-printable-format
-     */
-    struct timeval tv;
-    time_t nowtime;
-    struct tm *nowtm;
-    char tmbuf[64], buf[64];
-
-    gettimeofday(&tv, NULL);
-    nowtime = tv.tv_sec;
-    nowtm = localtime(&nowtime);
-    strftime(tmbuf, sizeof(tmbuf), "%Y-%m-%d %H:%M:%S", nowtm);
-
-    //tmbuf
-    //char* finalEntry = malloc((19+strlen(tmbuf))*sizeof(finalEntry));
-   
-    char finalEntry[256+strlen(tmbuf)];
-
-    strcat(finalEntry, "NormalCloseMessage,");
-    strcat(finalEntry, tmbuf);
-
-    //printf("%s\n", finalEntry);
-    addCloseEntry(finalEntry);
-
-    // 2. Delete all data (Af, Kf)
-    memset(realKey, 0, 256*sizeof(realKey) - 1); 
-    free(realKey);
-
-    freeSessionKey();
-
-    //resetLogAndEntry();
-
-    // 3. Close the file 
-    closeLogfp();
 }

@@ -25,6 +25,7 @@ char* decrypt(char*);
 void setKey(char*);
 void initRealKey();
 void closeLog();
+void freeRealKey();
 
 int getCurrEntry();
 void incLogNum();
