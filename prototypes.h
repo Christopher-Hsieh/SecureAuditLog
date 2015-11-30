@@ -17,6 +17,7 @@ char* getLogName(void);
 
 /* main.c */
 int getLogId(void);
+char* getUHash(void);
 
 /* helper.c */
 char* encrypt(char*);

@@ -10,8 +10,6 @@
 #include <openssl/blowfish.h>
 #include <openssl/sha.h>
 
-
-
 int LogNumber = 0;
 int currEntry = 0;
 
@@ -27,8 +25,6 @@ void incLogNum() {
 int getLogNum() {
     return LogNumber;
 }
-
-
 
 /*
     functions that are shared b/t trusted & untrusted
@@ -147,9 +143,9 @@ char* decrypt(char* in) {
 
 char* hash(char* in){
     size_t length = sizeof(in);
-
-    unsigned char hash[SHA_DIGEST_LENGTH];
-    return SHA1(in, length, hash);
+    unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
+    SHA1(in, length, hash);
+    return hash;
 }
 
 /*  Three things to do here:
@@ -195,4 +191,3 @@ void closeLog() {
     // 3. Close the file 
     closeLogfp();
 }
-

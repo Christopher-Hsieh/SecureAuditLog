@@ -28,22 +28,22 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Decrypt encryptedLog using session key ----------- 
 	char* logfile = decrypt(encryptedLog);
-	printf("%s\n", logfile);
+	// printf("%s\n", logfile);
 
 	//----------- Verify X0 is correct ----------- 
 	char* hashedLogfile = hash(logfile);
-	// if(hashedLogfile != getUHash()){
-	// 	fprintf(stderr, "X values do not match!");
-	// 	exit(0);
-	// }
+	if(strcmp(hashedLogfile, getUHash())){
+		fprintf(stderr, "X values do not match!");
+		exit(0);
+	}
 
 	//----------- Verify SIGN(X0) is correct ----------
 
-	//----------- Create X1 = IDu, hash(X0) ----------- 
-	char IDu_string[15];
-	sprintf(IDu_string, "%d", IDu);
-	char* X = malloc(strlen(IDu_string) + strlen(hashedLogfile) + 1); 
-	X = strcat(IDu_string, hashedLogfile);
+	//----------- Create X1 = IDlog, hash(X0) ----------- 
+	char IDlog_string[15];
+	sprintf(IDlog_string, "%d", getLogId());
+	char* X = malloc(strlen(IDlog_string) + strlen(hashedLogfile) + 1); 
+	X = strcat(IDlog_string, hashedLogfile);
 
 	//----------- Generate random session key K1 ----------- 
 	char* sessionKey = createKey(SIZE_OF_KEY);

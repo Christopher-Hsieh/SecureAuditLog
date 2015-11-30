@@ -17,6 +17,15 @@ int logId;
 int IDu = 101;
 char *sessionKey = NULL;
 int SIZE_OF_RSA = 16;
+char *hashedMessage;
+
+int getLogId(){
+	return logId;
+}
+
+char* getUHash(){
+	return hashedMessage;
+}
 
 void freeSessionKey() {
 	free(sessionKey);
@@ -188,10 +197,33 @@ void createLog(char fileName[]) {
 
 	// ------------- EK0 done & created -------------
 
-	// verifyLog(IDu, pke, Ek0);
+	// ------------- Store hashed message ------------
+	hashedMessage = hash(message);
+
+	verifyLog(IDu, pke, Ek0);
+
 	createFirstLogEntry(fileName, timeStamp, timeStamp_expire, IDu, pke, Ek0);
 }
 
-void response(int IDt, char* PKEu, char* E){
+void response(int IDt, char* PKEsessionKey, char* encryptedLog){
+	FILE *upriv;
+	upriv = fopen("U_Priv.pem", "r");
+	RSA *upriv_key = PEM_read_RSAPrivateKey(upriv,NULL,NULL,NULL);
 
+	//----------- Decrypt PKE session key -----------
+	setKey(publicKeyDecrypt(upriv_key, PKEsessionKey));
+	// printf("Decrypted: %s\n", sessionKeyU);
+
+	//----------- Decrypt encryptedLog using session key ----------- 
+	char* logfile = decrypt(encryptedLog);
+	// printf("%s\n", logfile);
+
+	//----------- Verify X1 is correct ----------- 
+	//contains IDlog or hash(X0)
+	char IDlog_string[15];
+	sprintf(IDlog_string, "%d", logId);
+	if (strstr(logfile, IDlog_string) == NULL || strstr(logfile, hashedMessage) == NULL) {
+   		fprintf(stderr, "X values do not match!");
+		exit(0);
+	}
 }
