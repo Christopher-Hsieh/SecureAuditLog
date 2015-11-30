@@ -123,7 +123,7 @@ void createLog(char fileName[]) {
 	char *tpub_key = fileToBuffer(tpub);
 
 	// ------------- generate random session key K0 -------------
-	sessionKey = hash(createKey(SIZE_OF_RSA));
+	sessionKey = hashTogether("LogFileInitializationType", createKey(SIZE_OF_RSA));
 
 	// ------------- Encrypt using PKE --------------
 	char *pke = publicKeyEncrypt(tpub_key, sessionKey);

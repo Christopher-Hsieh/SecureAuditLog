@@ -151,3 +151,14 @@ char* hash(char* in){
     SHA1(in, length, hash);
     return hash;
 }
+
+char* hashTogether(char* in_1, char* in_2){
+    char* out = malloc(strlen(in_1) + strlen(in_2));
+    strcpy(out, in_1);
+    strcat(out, in_2);
+
+    size_t length = sizeof(out);
+    unsigned char* hash = malloc(SHA_DIGEST_LENGTH * sizeof(char));
+    SHA1(out, length, hash);
+    return hash;
+}

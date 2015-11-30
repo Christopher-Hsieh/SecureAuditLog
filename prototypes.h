@@ -12,6 +12,7 @@ RSA* createRSA(unsigned char*);
 char* fileToBuffer(FILE*);
 void verifyLog(int, char*, char*);
 char* hash(char*);
+char* hashTogether(char*, char*);
 void response(int, char*, char*);
 char* getLogName(void);
 
