@@ -32,6 +32,6 @@ int getLogNum();
 
 /* untrustedLogger.c */
 void freeSessionKey();
-FILE* closeLogfp();
+void closeLogfp();
 
 #endif
