@@ -19,6 +19,7 @@ void writeAbnormalClose(char*);
 void writeMessage(char*, char*, char*, char*);
 
 // IDu - Unique ID for entity u
+int logCount = -1;
 int logId;
 int IDu = 101;
 int SIZE_OF_RSA = 16;
@@ -95,6 +96,8 @@ void addMessage(char message[]){
 	authKey = hash(authKey);
 	
 	writeMessage(messageType, Ek, hashChainY, HMAC);
+
+	printf("Added log entry number %d\n", logCount);
 }
 
 /*
@@ -305,6 +308,7 @@ void createFirstLogEntry(struct timeval d, struct timeval d_plus,
 	//Ek0(X0) 
 	fprintf(fp, "%s\n", Ek0);
 
+	logCount++;
 }
 
 void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
@@ -318,6 +322,8 @@ void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
 	fprintf(fp, "%s||", PKEsessionKey);
 	//Ek(X) 
 	fprintf(fp, "%s\n", encryptedLog);
+
+	logCount++;
 }
 
 void writeAbnormalClose(char* reason){
@@ -329,10 +335,12 @@ void writeAbnormalClose(char* reason){
 	//Current timestamp (d)
 	struct timeval timeStamp;
 	gettimeofday(&timeStamp,NULL);
-	fprintf(fp, "<%ld.%06ld,", (long) timeStamp.tv_sec, (long) timeStamp.tv_usec);  
+	fprintf(fp, "%ld.%06ld||", (long) timeStamp.tv_sec, (long) timeStamp.tv_usec);  
 
 	//Reason
-	fprintf(fp, "%s>\n", reason);
+	fprintf(fp, "%s\n", reason);
+
+	logCount++;
 }
 
 void writeMessage(char* Wj, char* Ek, char* Yj, char* Zj){
@@ -346,4 +354,6 @@ void writeMessage(char* Wj, char* Ek, char* Yj, char* Zj){
 	fprintf(fp, "%s||", Zj);
 	//Ek
 	fprintf(fp, "%s\n,", Ek);
+
+	logCount++;
 }
