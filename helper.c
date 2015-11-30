@@ -63,7 +63,7 @@ char* publicKeyEncrypt(char* pub_key, char* sessionKey){
     // Where we send the key to 
     RSA *rsa = createRSA(pub_key);
     char *encrypted = malloc((RSA_size(rsa) + 1) * sizeof(*encrypted));
-    int result = RSA_public_encrypt(strlen(sessionKey), sessionKey, encrypted, rsa, RSA_NO_PADDING);
+    int result = RSA_public_encrypt(strlen(sessionKey), sessionKey, encrypted, rsa, RSA_PKCS1_PADDING);
     encrypted[result] = '\0';
 
     // printf("RESULT:%i\n", result);
@@ -84,11 +84,12 @@ char* publicKeyEncrypt(char* pub_key, char* sessionKey){
 char* publicKeyDecrypt(RSA* priv_key, char* encrypted){
     char *decrypted = malloc((RSA_size(priv_key) + 1) * sizeof(*decrypted));
     if(RSA_private_decrypt(strlen(encrypted), (unsigned char*)encrypted, (unsigned char*)decrypted,
-                           priv_key, RSA_NO_PADDING) == -1) {
+                           priv_key, RSA_PKCS1_PADDING) == -1) {
         char * err = malloc(130);
         ERR_load_crypto_strings();
         ERR_error_string(ERR_get_error(), err);
         fprintf(stderr, "Error decrypting message: %s\n", err);
+        free(err);
     }
     return decrypted;
 }

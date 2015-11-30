@@ -38,7 +38,7 @@ void getEntryKeys_Verifier(int line_num, char** entryKeys) {
 	getEntries(getFileName(), &entries);
 
 	// Recieve Keys, from T, for each entry
-	getEntryKeys_Trusted(&entries, &entryKeys, line_count);
+	// getEntryKeys_Trusted(&entries, &entryKeys, line_count);
 	// TODO: Do something with the entry KEys
 }
 
