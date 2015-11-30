@@ -12,12 +12,17 @@
 
 #include "prototypes.h"
 
+//Prototypes for untrusted only
+void writeResponse(int, char*, char*);
+void createFirstLogEntry(char*, struct timeval, struct timeval, int, char*, char*);
+
 // IDu - Unique ID for entity u
 int logId;
 int IDu = 101;
 char *sessionKey = NULL;
 int SIZE_OF_RSA = 16;
 char *hashedMessage;
+char *authKey;
 
 int getLogId(){
 	return logId;
@@ -64,43 +69,6 @@ void closeLogfp() {
 
 void addCloseEntry(char* finalEntry) {
 	fprintf(fp, "%s\n", finalEntry);
-}
-
-/*
-U forms the first log entry, L0:
-	W0 = LogFileInitializationType
-	D0 = d; d+; IDlog; M0
-		M0 = IDu, PKEpkt(K0), Ek0(X0, SIGNsku(X0))
-*/
-void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus,
-						 int IDu, char* PKEpkt, char* Ek0) {
-
-	fp = fopen(filename, "w+");
-	setFileName(filename);
-	
-	//W0, d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0))
-
-	//W0
-	fprintf(fp, "LogFileInitializationType\t");
-
-	//d
-	fprintf(fp, "<%ld.%06ld,", (long) d.tv_sec, (long) d.tv_usec);  
-
-	//d+
-	fprintf(fp, "%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
-
-	//IDlog
-	fprintf(fp, "%d,", logId); 
-
-	//IDu
-	fprintf(fp, "%d,", IDu);
-
-	//PKEpkt(K0)
-	fprintf(fp, "%s,", PKEpkt);
-
-	//Ek0(X0) 
-	fprintf(fp, "%s>\n", Ek0);
-
 }
 
 /*
@@ -172,7 +140,7 @@ void createLog(char fileName[]) {
 	char *certificate = getCertificate(upub_key); //this call currently just returns static string
 
 	// ------------- generate authentication key A0 -------------
-	char *authKey = createKey(SIZE_OF_RSA);
+	authKey = createKey(SIZE_OF_RSA);
 
 	// ------------- ignore protocol step identifier p (according to TA) -------------
 
@@ -202,6 +170,7 @@ void createLog(char fileName[]) {
 
 	verifyLog(IDu, pke, Ek0);
 
+	fp = fopen(fileName, "w+");
 	createFirstLogEntry(fileName, timeStamp, timeStamp_expire, IDu, pke, Ek0);
 }
 
@@ -223,7 +192,57 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
 	char IDlog_string[15];
 	sprintf(IDlog_string, "%d", logId);
 	if (strstr(logfile, IDlog_string) == NULL || strstr(logfile, hashedMessage) == NULL) {
-   		fprintf(stderr, "X values do not match!");
-		exit(0);
+   		fprintf(stderr, "X1 values do not match!\n");
+   		return;
+	} else {
+		//CALLED WHEN VALUES ARE VALID
+		writeResponse(IDt, PKEsessionKey, encryptedLog);
+
+		//remove old hashed X0 value
+		hashedMessage = NULL;
+
+		//calculate new authentication value for A
+		authKey = createKey(SIZE_OF_RSA);
 	}
+}
+
+/*
+U forms the first log entry, L0:
+	W0 = LogFileInitializationType
+	D0 = d; d+; IDlog; M0
+		M0 = IDu, PKEpkt(K0), Ek0(X0, SIGNsku(X0))
+*/
+void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus,
+						 int IDu, char* PKEpkt, char* Ek0) {
+	
+	//W0, d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0))
+
+	//W0
+	fprintf(fp, "LogFileInitializationType\t");
+	//d
+	fprintf(fp, "<%ld.%06ld,", (long) d.tv_sec, (long) d.tv_usec);  
+	//d+
+	fprintf(fp, "%ld.%06ld,", (long) d_plus.tv_sec, (long) d_plus.tv_usec);  
+	//IDlog
+	fprintf(fp, "%d,", logId); 
+	//IDu
+	fprintf(fp, "%d,", IDu);
+	//PKEpkt(K0)
+	fprintf(fp, "%s,", PKEpkt);
+	//Ek0(X0) 
+	fprintf(fp, "%s>\n", Ek0);
+
+}
+
+void writeResponse(int IDt, char* PKEsessionKey, char* encryptedLog){
+	//Wj		< IDt, PKEpku(K), Ek(X) >
+
+	//W0
+	fprintf(fp, "ResponseMessageType\t");
+	//IDu
+	fprintf(fp, "<%d,", IDt);
+	//PKEpkt(K)
+	fprintf(fp, "%s,", PKEsessionKey);
+	//Ek(X) 
+	fprintf(fp, "%s>\n", encryptedLog);
 }

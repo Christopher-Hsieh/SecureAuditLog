@@ -33,8 +33,8 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	//----------- Verify X0 is correct ----------- 
 	char* hashedLogfile = hash(logfile);
 	if(strcmp(hashedLogfile, getUHash())){
-		fprintf(stderr, "X values do not match!");
-		exit(0);
+		fprintf(stderr, "X0 values do not match!\n");
+		return;
 	}
 
 	//----------- Verify SIGN(X0) is correct ----------
