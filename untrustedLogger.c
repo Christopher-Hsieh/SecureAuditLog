@@ -14,7 +14,7 @@
 
 //Prototypes for untrusted only
 void writeResponse(int, char*, char*);
-void createFirstLogEntry(char*, struct timeval, struct timeval, int, char*, char*);
+void createFirstLogEntry(struct timeval, struct timeval, int, char*, char*);
 
 // IDu - Unique ID for entity u
 int logId;
@@ -23,6 +23,8 @@ char *sessionKey = NULL;
 int SIZE_OF_RSA = 16;
 char *hashedMessage;
 char *authKey;
+FILE *fp;
+char* file_name;
 
 int getLogId(){
 	return logId;
@@ -51,9 +53,6 @@ char * fileToBuffer(FILE *fp) {
 	return buffer;
 }
 
-FILE *fp;
-char* file_name;
-
 void setFileName(char* str) {
 	file_name = malloc((strlen(str) + 1 )*sizeof(file_name));
 	strcpy(file_name, str);
@@ -80,6 +79,8 @@ void addCloseEntry(char* finalEntry) {
 void createLog(char fileName[]) {
 	srand(time(NULL));
 	logId = rand();
+
+	setFileName(fileName);
 
 	// Create new file with specified name
 
@@ -168,10 +169,8 @@ void createLog(char fileName[]) {
 	// ------------- Store hashed message ------------
 	hashedMessage = hash(message);
 
+	createFirstLogEntry(timeStamp, timeStamp_expire, IDu, pke, Ek0);
 	verifyLog(IDu, pke, Ek0);
-
-	fp = fopen(fileName, "w+");
-	createFirstLogEntry(fileName, timeStamp, timeStamp_expire, IDu, pke, Ek0);
 }
 
 void response(int IDt, char* PKEsessionKey, char* encryptedLog){
@@ -212,9 +211,10 @@ U forms the first log entry, L0:
 	D0 = d; d+; IDlog; M0
 		M0 = IDu, PKEpkt(K0), Ek0(X0, SIGNsku(X0))
 */
-void createFirstLogEntry(char* filename, struct timeval d, struct timeval d_plus,
+void createFirstLogEntry(struct timeval d, struct timeval d_plus,
 						 int IDu, char* PKEpkt, char* Ek0) {
-	
+	fp = fopen(file_name, "w+");
+
 	//W0, d, d+, IDlog, IDu, PKEPKT (K0), EK0 (X0; SIGNSKU (X0))
 
 	//W0
