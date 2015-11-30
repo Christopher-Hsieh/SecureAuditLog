@@ -28,10 +28,10 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Decrypt encryptedLog using session key ----------- 
 	char* logfile = decrypt(encryptedLog);
-	printf("LogFile: %s\n", logfile);
 
 	//----------- Verify X0 is correct ----------- 
 	char* hashedLogfile = hash(logfile);
+	printf("%s\n", hashedLogfile);
 	if(strcmp(hashedLogfile, getUHash())){
 		fprintf(stderr, "X0 values do not match!\n");
 		return;
@@ -40,10 +40,11 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	//----------- Verify SIGN(X0) is correct ----------
 
 	//----------- Create X1 = IDlog, hash(X0) ----------- 
-	char IDlog_string[15];
+	char *IDlog_string = malloc(15 * sizeof(char));
 	sprintf(IDlog_string, "%d", getLogId());
-	char* X = malloc(strlen(IDlog_string) + strlen(hashedLogfile) + 1); 
-	X = strcat(IDlog_string, hashedLogfile);
+	char* X = malloc((strlen(IDlog_string) + strlen(hashedLogfile)) * sizeof(char));
+	strcpy(X, IDlog_string);
+	strcat(X, hashedLogfile);
 
 	//----------- Generate random session key K1 ----------- 
 	char* sessionKey = createKey(SIZE_OF_KEY);
@@ -57,12 +58,9 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//encrypt X using session key
 	setKey(sessionKey);
-	char* E = encrypt(X);
+	char* E = malloc((strlen(X) + 1) * sizeof(char));
+	E = encrypt(X);
 
 	//----------- Create M1 = IDt, PKE(K1), E(X1, SIGN(X1)) ----------- 
 	response(IDt, PKEu, E);
-}
-
-void getEntryKeys_Trusted(char** entries, char** keys, int line_count){
-
 }
