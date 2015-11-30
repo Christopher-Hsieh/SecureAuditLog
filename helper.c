@@ -76,12 +76,24 @@ char* publicKeyDecrypt(RSA* priv_key, char* encrypted){
     return decrypted;
 }
 
-char* encrypt(char *strToEncypt, char* key) {
+char* realKey = NULL;
+
+void initRealKey() {
+    realKey = malloc(256*sizeof(realKey));
+    memset(realKey, 0, 256*sizeof(realKey) - 1); 
+}
+
+void setKey(char* str) {
+    memcpy(realKey, str, sizeof(str));
+}
+
+
+char* encrypt(char *strToEncypt) {
     int bfSize = strlen(strToEncypt);
 
     BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
     // Turn key into BF key
-    BF_set_key(bf_key, bfSize, key);
+    BF_set_key(bf_key, bfSize, realKey);
 
     char *encryptedStr = malloc((bfSize + 1) * sizeof(*encryptedStr));
 
@@ -94,13 +106,13 @@ char* encrypt(char *strToEncypt, char* key) {
     return encryptedStr;
 }
 
-char* decrypt(char* in, char* key) {
+char* decrypt(char* in) {
 
     int bfSize = strlen(in);
 
     BF_KEY *bf_key = malloc((bfSize + 1) * sizeof(*bf_key));
     // Turn key into BF key
-    BF_set_key(bf_key, bfSize, key);
+    BF_set_key(bf_key, bfSize, realKey);
 
     char *out = malloc((bfSize + 1) * sizeof(*out));
 

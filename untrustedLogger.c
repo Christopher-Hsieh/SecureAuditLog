@@ -169,7 +169,8 @@ void createLog(char fileName[]) {
 
 	// ------------- Turn K0 into BF key for symmetric enc -------------
 	char *Ek0 = malloc((strlen(message) + 1) * sizeof(*Ek0));
-	Ek0 = encrypt(message, sessionKey);
+	setKey(sessionKey);
+	Ek0 = encrypt(message);
 
 
 	// ------------- EK0 done & created -------------

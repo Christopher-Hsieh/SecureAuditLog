@@ -23,11 +23,11 @@ char* verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	RSA *tpriv_key = PEM_read_RSAPrivateKey(tpriv,NULL,NULL,NULL);
 
 	//----------- Decrypt PKE session key -----------
-	char* sessionKeyU = publicKeyDecrypt(tpriv_key, PKEsessionKey);
+	setKey(publicKeyDecrypt(tpriv_key, PKEsessionKey));
 	// printf("Decrypted: %s\n", sessionKeyU);
 
 	//----------- Decrypt encryptedLog using session key ----------- 
-	char* logfile = decrypt(encryptedLog, sessionKeyU);
+	char* logfile = decrypt(encryptedLog);
 	printf("%s\n", logfile);
 
 	//----------- Verify X0 is correct ----------- 
@@ -56,7 +56,8 @@ char* verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 	char* PKEu = publicKeyEncrypt(upub_key, sessionKey);
 
 	//encrypt X using session key
-	char* E = encrypt(X, sessionKey);
+	setKey(sessionKey);
+	char* E = encrypt(X);
 
 	//----------- Create M1 = IDt, PKE(K1), E(X1, SIGN(X1)) ----------- 
 	// sendResponse(IDt, PKEu, E);

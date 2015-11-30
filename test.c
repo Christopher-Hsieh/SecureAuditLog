@@ -3,5 +3,6 @@
 #include <string.h>
 
 void main (int argc, char *argv[]) {
+	initRealKey();
 	createLog("testLog");
  }
