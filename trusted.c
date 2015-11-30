@@ -7,13 +7,33 @@
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
 
+// Libs for certificate
+#include <openssl/x509v3.h>
+#include <openssl/x509.h>
+#include <openssl/engine.h>
+#include <openssl/pem.h>
+#include <openssl/conf.h>
+
 #include "prototypes.h"
 
 int IDt = 111;
 int SIZE_OF_KEY = 16;
 
+int mkcert(X509 **, EVP_PKEY **, int , int , int );
+
 char* getCertificate(char* publicKey){
-	//not sure how to generate the certificate or what the paper is even saying for this part
+
+	X509 *cert;
+	EVP_PKEY *pubkey;
+
+	d2i_x509(&cert, publicKey, strlen(publicKey));
+	pubkey = X509_get_pubkey(cert);
+
+	RSA *rsa;
+	rsa = EVP_PKEY_get1_RSA(pubkey);
+
+	mkcert(&x509, &publicKey, 512, 0, 365);
+
 	return "random_key";
 }
 
@@ -63,4 +83,8 @@ void verifyLog(int IDu, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Create M1 = IDt, PKE(K1), E(X1, SIGN(X1)) ----------- 
 	response(IDt, PKEu, E);
+}
+
+void getEntryKeys_Trusted(char** entries, char** keys, int line_count) {
+
 }
