@@ -16,6 +16,7 @@
 void writeResponse(int, char*, char*);
 void createFirstLogEntry(struct timeval, struct timeval, int, char*, char*);
 void writeAbnormalClose(char*);
+void writeMessage(char*, char*, char*, char*);
 
 // IDu - Unique ID for entity u
 int logId;
@@ -89,7 +90,8 @@ void addMessage(char message[]){
 
 	//Zj
 	char* HMAC = HMAC_Encrypt(hashChainY, authKey);
-	printf("%s\n", HMAC);
+	
+	writeMessage(messageType, Ek, hashChainY, HMAC);
 }
 
 /*
@@ -329,4 +331,17 @@ void writeAbnormalClose(char* reason){
 
 	//Reason
 	fprintf(fp, "%s>\n", reason);
+}
+
+void writeMessage(char* Wj, char* Ek, char* Yj, char* Zj){
+	//Wj, Ek(D), Yj, Zj
+
+	//Wj
+	fprintf(fp, "%s\t", Wj);
+	//Ek
+	fprintf(fp, "<%s,", Ek);
+	//Yj
+	fprintf(fp, "%s,", Yj);
+	//Zj
+	fprintf(fp, "%s>\n", Zj);
 }
