@@ -12,6 +12,7 @@ void getEntries(char*, char**, char**);
 
 void verifyEntryNum(int entrynum) {
 
+
 	int linecount = getNumOfLinesInFile(getFileName());
 	char* entryKeys[linecount];
 	char* entryData[linecount];

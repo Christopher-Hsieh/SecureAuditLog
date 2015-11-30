@@ -39,7 +39,8 @@ void main (int argc, char *argv[]) {
 		// Verify entry_no cmd
 		else if (strncmp(buffer, "verify", 6) == 0) {
 			scanf("%s", buffer);
-			verifyEntryNum((int)buffer);
+			int ret = atoi(buffer);
+			verifyEntryNum(ret);
 		}
 
 		// Verify all cmd
