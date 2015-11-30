@@ -185,11 +185,10 @@ void response(int IDt, char* PKEsessionKey, char* encryptedLog){
 
 	//----------- Decrypt encryptedLog using session key ----------- 
 	char* logfile = decrypt(encryptedLog);
-	// printf("%s\n", logfile);
 
 	//----------- Verify X1 is correct ----------- 
 	//contains IDlog or hash(X0)
-	char IDlog_string[15];
+	char *IDlog_string = malloc(15 * sizeof(char));
 	sprintf(IDlog_string, "%d", logId);
 	if (strstr(logfile, IDlog_string) == NULL || strstr(logfile, hashedMessage) == NULL) {
 		char* error = "X1 values do not match";
